@@ -45,8 +45,10 @@ module modulator #(
 
     // shift register to serialize each pwm-symbol
     always @ (posedge clk) begin
-        if(rst == 1'b1)
+        if(rst == 1'b1)begin
             shift_register <= `AM_PWM_STEPS'd0;
+            counter_sine_10k <= 0;
+        end
         else if (tc_pwm_symb == 1'b1) begin
             counter_sine_10k <= counter_sine_10k + 1;
             case(counter_sine_10k)

@@ -23,7 +23,7 @@ module counter #(
             count <=0;
         else if ( enable == 1'b1 ) begin
             count <= count + 1;
-            if ( count == MODULE ) begin
+            if ( count == MODULE-1 ) begin
                 count <= 0;
                 tc2 <= 1'b1;
             end

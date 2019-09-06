@@ -21,7 +21,7 @@ module test_modulator;
             #5
             rst<=0;
             
-            #2005;
+            #10005;
             $finish;
 
         end
