@@ -1,4 +1,5 @@
 `include "../../inc/project_defines.v"
+`timescale 1 ns/100 ps  // time-unit = 1 ns, precision = 10 ps
 
 module test_modulator;
 
@@ -8,7 +9,7 @@ module test_modulator;
   /* Make a regular pulsing clock. */
   reg clk = 0;
 
-  always #1 clk = !clk;
+  always #10 clk = !clk;
 
 
   modulator  #(.FOO(10),.AM_CLKS_IN_PWM_STEPS(`AM_PWM_STEPS),.AM_PWM_STEPS(`AM_PWM_STEPS))
@@ -18,10 +19,10 @@ module test_modulator;
             $dumpfile ("waveform.vcd");
             $dumpvars (0,test_modulator);
             rst<=1;
-            #5
+            #20
             rst<=0;
             
-            #10005;
+            #520000;
             $finish;
 
         end

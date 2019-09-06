@@ -1,5 +1,5 @@
 # Ignore everything these directories
-#/build
+/build
 
 
 # But not these files...
