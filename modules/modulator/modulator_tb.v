@@ -1,4 +1,4 @@
-`include "project_defines.v"
+`include "../../inc/project_defines.v"
 
 module test_modulator;
 
@@ -11,8 +11,8 @@ module test_modulator;
   always #1 clk = !clk;
 
 
-  modulator dut #(parameter FOO = 10,parameter AM_CLKS_IN_PWM_STEPS = `AM_PWM_STEPS, parameter AM_PWM_STEPS = `AM_PWM_STEPS,)
-  				 (clk,rst,pwm);
+  modulator  #(.FOO(10),.AM_CLKS_IN_PWM_STEPS(`AM_PWM_STEPS),.AM_PWM_STEPS(`AM_PWM_STEPS))
+  				 dut (clk,rst,pwm);
 
         initial begin
             $dumpfile ("waveform.vcd");

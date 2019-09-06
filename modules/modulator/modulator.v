@@ -1,9 +1,9 @@
-`include "project_defines.v"
+`include "../../inc/project_defines.v"
 
 module modulator #(
     parameter FOO = 10,
     parameter AM_CLKS_IN_PWM_STEPS = `AM_PWM_STEPS,
-    parameter AM_PWM_STEPS = `AM_PWM_STEPS,
+    parameter AM_PWM_STEPS = `AM_PWM_STEPS
 )(
     input clk,
     input rst,
@@ -13,7 +13,7 @@ module modulator #(
 
     /* registers */
     reg [WIDTH-1:0] count;
-    reg tc_pwm_step, tc_pwm_symb;
+    wire tc_pwm_step, tc_pwm_symb;
     reg [AM_PWM_STEPS-1:0] shift_register;
 
 
@@ -25,7 +25,7 @@ module modulator #(
 
     // counter to generate ticks at pwm-steps frequency
     counter #(
-        .MODULE  (AM_CLKS_IN_PWM_STEPS),
+        .MODULE  (AM_CLKS_IN_PWM_STEPS)
     ) inst_counter_pwm_steps (
         .clk    (clk),
         .rst    (rst),
@@ -35,7 +35,7 @@ module modulator #(
 
     // counter to generate ticks at pwm-symbols frequency
     counter #(
-        .MODULE  (AM_PWM_STEPS),
+        .MODULE  (AM_PWM_STEPS)
     ) inst_counter_pwm_symb (
         .clk    (clk),
         .rst    (rst),
@@ -46,7 +46,7 @@ module modulator #(
     // shift register to serialize each pwm-symbol
     always @ (posedge clk) begin
         if(rst == 1'b1)
-            shift_register <= AM_PWM_STEPS'd0;
+            shift_register <= `AM_PWM_STEPS'd0;
         else if (tc_pwm_symb == 1'b1) begin
             counter_sine_10k <= counter_sine_10k + 1;
             case(counter_sine_10k)

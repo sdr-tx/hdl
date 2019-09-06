@@ -1,7 +1,7 @@
 /* module */
 
 module counter #(
-    parameter MODULE = 50000000,
+    parameter MODULE = 50000000
 )(
     input   clk,
     input   rst,
@@ -12,18 +12,20 @@ module counter #(
 
     /* Counter register */
     reg [WIDTH-1:0] count;
+    reg tc2;
+    assign tc=tc2;
 
     /* always */
     always @ (posedge clk) begin
-        tc <= 1'b0;
+        tc2 <= 1'b0;
 
         if (rst == 1'b1)
-            count <= WIDTH'b0;
+            count <=0;
         else if ( enable == 1'b1 ) begin
             count <= count + 1;
             if ( count == MODULE ) begin
-                count <= WIDTH'b0;
-                tc <= 1'b1;
+                count <= 0;
+                tc2 <= 1'b1;
             end
         end
     end
