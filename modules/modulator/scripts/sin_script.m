@@ -7,10 +7,10 @@ clear
 clc
 
 fs = 1e6; 									% Sampling frequency
-f  = 10e3; 									% Message frequency
+f  = 1e3; 									% Message frequency
 
 B = 6; 	  									% Number of bits
-N = 100;  									% Length of signal
+N = 1000;  									% Length of signal
 t = (0:(N-1))*(1/fs); 
 
 sig_an  = 0.5 * sin(2*pi*f*t)+0.5;
@@ -26,5 +26,10 @@ for(i=1:1:N)
     pwm=[pwm; sprintf('%d', aux)]; 
 end
 
-display(pwm)
+%display(pwm)
 
+fid = fopen('bits.txt','wt');
+for(i=1:1:N)  
+fprintf(fid, '%s\n',pwm(i,:));
+end
+fclose(fid)
