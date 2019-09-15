@@ -9,14 +9,16 @@ clc
 fs = 1e6; 									% Sampling frequency
 f  = 1e3; 									% Message frequency
 
+
 B = 6; 	  									% Number of bits
 N = 1000;  									% Length of signal
 t = (0:(N-1))*(1/fs); 
 
 
-sig_an  = 0.5 * sin(2*pi*f*t)+0.5;
-d_step  = max(sig_an)/(2^B-1);
-sig_q   = round(sig_an/d_step);
+sig_an  = sin(2*pi*f*t);                    % Input signal
+sig_an= sig_an./(max(sig_an)*2) + 0.5;      % Normalization of the signal between -1;+1
+d_step  = max(sig_an)/(2^B-1);              % Quantization step value
+sig_q   = round(sig_an/d_step);             % Quatification of the signal
 
 
 pwm=[];
@@ -36,5 +38,5 @@ end
 
 %display(pwm)
 
-fclose(fid_bin)
-fclose(fid_dec)
+fclose(fid_bin);
+fclose(fid_dec);

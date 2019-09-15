@@ -7,15 +7,15 @@ clear
 clc
 
 fs = 1e6; 									% Sampling frequency
-f  = 1e3; 									% Message frequency
-
+f1  = 2e3; 									% Message frequency 1
+f2  = 5e3; 									% Message frequency 2
 
 B = 6; 	  									% Number of bits
 N = 1000;  									% Length of signal
 t = (0:(N-1))*(1/fs); 
 
-
-sig_an  = sin(2*pi*f*t);                    % Input signal
+  
+sig_an  = sin(2*pi*f1*t) + sin(2*pi*f2*t);  % Input signal
 sig_an= sig_an./(max(sig_an)*2) + 0.5;      % Normalization of the signal between -1;+1
 d_step  = max(sig_an)/(2^B-1);              % Quantization step value
 sig_q   = round(sig_an/d_step);             % Quatification of the signal
@@ -23,8 +23,8 @@ sig_q   = round(sig_an/d_step);             % Quatification of the signal
 
 pwm=[];
 
-fid_bin = fopen('data_pwm_bits.dat','wt');
-fid_dec = fopen('data_pwm_dec.dat','wt');
+fid_bin = fopen('data_pwm_2k_5k_bits.dat','wt');
+fid_dec = fopen('data_pwm_2k_5k_dec.dat','wt');
 
 for(i=1:1:N)
 		aux(1:sig_q(i))=ones();           
