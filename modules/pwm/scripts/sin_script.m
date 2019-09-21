@@ -7,7 +7,7 @@ clear
 clc
 
 fs = 1e6; 									% Sampling frequency
-f  = 1e3; 									% Message frequency
+f  = 5e3; 									% Message frequency
 
 
 B = 6; 	  									% Number of bits
