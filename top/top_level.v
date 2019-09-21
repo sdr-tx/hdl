@@ -1,12 +1,16 @@
 
 module top_level (
     input   hwclk,
+    // input   clk,
     input   rst,
     output  [7:0] leds,
     // output  pwm,
 
     // FT245 interface
     inout   [7:0] in_out_245,
+        // input   [7:0] in_245,
+        // output  [7:0] out_245,
+        // output  tx_oe_245,
     input   rxf_245,
     output  rx_245,
     input   txe_245,
@@ -55,10 +59,10 @@ module top_level (
      */
     /* pll */
     pll_128MHz system_clk(
-    	.clock_in   (hwclk),
-    	.clock_out  (clk),
-    	.locked     (aux)
-	);
+        .clock_in   (hwclk),
+        .clock_out  (clk),
+        .locked     (aux)
+    );
 
 /*    modulator #(
         .FOO            (10),
