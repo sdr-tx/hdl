@@ -10,24 +10,22 @@ module ft245_fifo_interface #(
     // ft245 rx interface
     input [7:0] rx_data_245,
     input rxf_245,
-    output reg rx_245=0,//1'b1,
-
+    output reg rx_245,
     // ft245 tx interface
     output reg [7:0] tx_data_245,
     input txe_245,
-    output reg wr_245,//= 0,//1'b1,
-    output reg tx_oe_245,//=1'b0,
+    output reg wr_245,
+    output reg tx_oe_245,
 
-    // simple interface
+    // simple interface rx
     output reg [7:0] rx_data_si,
     output reg rx_rdy_si,
     input rx_ack_si,
-
+    // simple interface tx
     input [7:0] tx_data_si,
     input tx_rdy_si,
     output reg tx_ack_si
 );
-
 
     localparam WAIT_TIME_RX = 30.0;
     localparam INACTIVE_TIME_RX = 14.0;
@@ -39,23 +37,8 @@ module ft245_fifo_interface #(
     localparam CNT_INACTIVE_RX = $rtoi($ceil(INACTIVE_TIME_RX/CLOCK_PERIOD_NS))+2; // <-- this is important
                                                             // the "+2" is because of the delay
     localparam CNT_SETUP_TX = $rtoi($ceil(SETUP_TIME_TX/CLOCK_PERIOD_NS));
-    localparam CNT_ACTIVE_TX = $rtoi($ceil(ACTIVE_TIME_TX/CLOCK_PERIOD_NS));
+    localparam CNT_ACTIVE_TX = $rtoi($ceil(ACTIVE_TIME_TX/CLOCK_PERIOD_NS))+4;
     localparam MAX_CNT = CNT_WAIT_RX;
-
-/*  // Forcing itor
-    localparam CNT_WAIT_RX = $rtoi( $ceil( $itor(WAIT_TIME_RX) / CLOCK_PERIOD_NS ) );
-    localparam CNT_INACTIVE_RX = $rtoi( $ceil( $itor(INACTIVE_TIME_RX)/ CLOCK_PERIOD_NS ) );
-    localparam CNT_SETUP_TX = $rtoi( $ceil( $itor(SETUP_TIME_TX) / CLOCK_PERIOD_NS ) );
-    localparam CNT_ACTIVE_TX = $rtoi( $ceil( $itor(ACTIVE_TIME_TX) / CLOCK_PERIOD_NS ) );
-    localparam MAX_CNT = CNT_WAIT_RX;
-*/
-/*  // HARDCODED
-    localparam CNT_WAIT_RX = 3; // 30/10
-    localparam CNT_INACTIVE_RX = 2; // 14/10
-    localparam CNT_SETUP_TX = 1; // 5/10
-    localparam CNT_ACTIVE_TX = 3; // 30/10
-    localparam MAX_CNT = CNT_WAIT_RX;
-*/
 
     initial begin
         //$display("CLOCK_PERIOD_NS:: CLOCK_PERIOD_NS=%s", CLOCK_PERIOD_NS);
@@ -83,19 +66,6 @@ module ft245_fifo_interface #(
         txe_245_i <= txe_245;
         txe_245_ii <= txe_245_i;
         if (rst == 1'b1) begin
-            /* // FT245_ECHO (OK)
-            state <= ST_IDLE;
-            rx_245 <= 1'b1;
-            tx_oe_245 <= 1'b0;
-            cnt <= 3'd0;
-            wr_245 <= 1'b1;
-            rx_rdy_si <= 1'b0;
-            tx_ack_si <= 1'b0;
-            rxf_245_i <= 1'b1;
-            rxf_245_ii <= 1'b1;
-            txe_245_i <= 1'b1;
-            txe_245_ii <= 1'b1;
-            */
             tx_data_245 <= 0;
             rx_245 <= 1'b1;
             wr_245 <= 1'b1;

@@ -3,15 +3,6 @@ set_io rst              M15
 
 #set_io pwm              N16
 
-set_io leds[0]          B5
-set_io leds[1]          B4
-set_io leds[2]          A2
-set_io leds[3]          A1
-set_io leds[4]          C5
-set_io leds[5]          C4
-set_io leds[6]          B3
-set_io leds[7]          C3
-
 # FTDI interface
 set_io in_out_245[0]    B10
 set_io in_out_245[1]    B12
@@ -26,6 +17,16 @@ set_io rxf_245          F15
 set_io rx_245           D15
 set_io txe_245          E14
 set_io wr_245           D14
+
+# Leds keep alive
+set_io leds[0]          B5
+set_io leds[1]          B4
+set_io leds[2]          A2
+set_io leds[3]          A1
+set_io leds[4]          C5
+set_io leds[5]          C4
+set_io leds[6]          B3
+set_io leds[7]          C3
 
 # --- test ---
 set_io fake_rst         N16

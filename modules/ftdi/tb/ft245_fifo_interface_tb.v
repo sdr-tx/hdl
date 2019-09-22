@@ -7,7 +7,7 @@ module test_modulator;
   
   /* Make a regular pulsing clock. */
   reg clk = 0;
-  reg [7:0] in_245;
+  reg [7:0] rx_data_245;
   wire rx_245, wr_245;
   reg rxf_245, txe_245;
 
@@ -18,15 +18,13 @@ module test_modulator;
     .rst        (rst),
     .leds       (),
     // FT245 interface
-    .in_245     (in_245),
-    .out_245    (),
-    .tx_oe_245  (),
+    .rx_data_245(rx_data_245),
     .rxf_245    (rxf_245),
     .rx_245     (rx_245),
+    .tx_data_245(),
     .txe_245    (txe_245),
     .wr_245     (wr_245),
-
-
+    .tx_oe_245  (),
     // --- test ---
     .fake_rst   ()
   );
@@ -39,11 +37,44 @@ module test_modulator;
       rxf_245 <= 1'b1;
       #20
       rst <= 0;
+
+      // first word
       #20
-      in_245 <= 8'hAA;
+      rx_data_245 <= 8'hAA;
       rxf_245 <= 1'b0;
       #150
       rxf_245 <= 1'b1;
+      
+      // second word
+      #20
+      rx_data_245 <= 8'hAA;
+      rxf_245 <= 1'b0;
+      #150
+      rxf_245 <= 1'b1;
+      
+      #140
+      txe_245 <= 1'b0;
+      // // third word
+      // #20
+      // rx_data_245 <= 8'hAA;
+      // rxf_245 <= 1'b0;
+      // #150
+      // rxf_245 <= 1'b1;
+      
+      // // fourth word
+      // #20
+      // rx_data_245 <= 8'hAA;
+      // rxf_245 <= 1'b0;
+      // #150
+      // rxf_245 <= 1'b1;
+
+      // // fifth word
+      // #20
+      // rx_data_245 <= 8'hAA;
+      // rxf_245 <= 1'b0;
+      // #150
+      // rxf_245 <= 1'b1;
+
       #1500000;
       $finish;
 

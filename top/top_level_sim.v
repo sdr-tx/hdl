@@ -1,17 +1,18 @@
 
 module top_level (
-    input   hwclk,
-    // input   clk,
+    input   clk,
     input   rst,
     output  [7:0] leds,
     // output  pwm,
 
     // FT245 interface
-    inout   [7:0] in_out_245,
+    input   [7:0] rx_data_245,
     input   rxf_245,
     output  rx_245,
+    output  [7:0] tx_data_245,
     input   txe_245,
     output  wr_245,
+    output  tx_oe_245,
 
     // --- test ---
     output  fake_rst
@@ -26,7 +27,7 @@ module top_level (
      * signals
      ***************************************************************************
      */
-    reg clk;
+    // reg clk;
     reg [7:0] led_reg;
 
     // FT245 - Simple Interface
@@ -53,25 +54,29 @@ module top_level (
      * module instances
      ***************************************************************************
      */
-    /* pll */
-    pll_128MHz system_clk(
-        .clock_in   (hwclk),
-        .clock_out  (clk),
-        .locked     (aux)
-    );
+    // /* pll */
+    // pll_128MHz system_clk(
+    //     .clock_in   (hwclk),
+    //     .clock_out  (clk),
+    //     .locked     (aux)
+    // );
 
     /* FT245 wrapper
      * Interface between FT245 FIFO and SIMPLE INTERFACE
      */
-    ft245_block ft245_wrapper (
+    ft245_fifo_interface #(
+        .CLOCK_PERIOD_NS(10)
+    ) inst_ft245_fifo_interface (
         .clk        (clk),
         .rst        (rst),
         // FT245 interface
-        .in_out_245 (in_out_245),
+        .rx_data_245 (rx_data_245),
         .rxf_245    (rxf_245),
         .rx_245     (rx_245),
+        .tx_data_245(tx_data_245),
         .txe_245    (txe_245),
         .wr_245     (wr_245),
+        .tx_oe_245  (tx_oe_245),
         // simple interface
         .rx_data_si (rx_data_si),
         .rx_rdy_si  (rx_rdy_si),
