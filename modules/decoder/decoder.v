@@ -50,17 +50,17 @@ module decoder (
 
                 ST_CTRL_WORD:
                 begin
-                    // if (sync == 8'hFF) begin
+                    if (REG_SYNC_WORD == 8'hFF) begin
                         state <= ST_OK;                        
-                    // end else begin
-                    //     state <= ST_IDLE;
-                    // end
+                    end else begin
+                        state <= ST_IDLE;
+                    end
                 end
 
                 ST_OK:
                 begin
                     tx <= 1'b1;
-                    data_tx <= ST_CTRL_WORD;//8'h58;//8'hAA;
+                    data_tx <= REG_CTRL01;//8'h58;//8'hAA;
                     state <= ST_RECEIVING;     
                 end
 
