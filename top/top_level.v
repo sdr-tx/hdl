@@ -1,10 +1,9 @@
 
 module top_level (
     input   hwclk,
-    // input   clk,
     input   rst,
     output  [7:0] leds,
-    // output  pwm,
+    output  pwm,
 
     // FT245 interface
     inout   [7:0] in_out_245,
@@ -36,7 +35,11 @@ module top_level (
 
     // Inteface between control_unit and deco_unit
     wire tx, rx;
-    wire [7:0] data_tx, data_rx, sample;
+    wire [7:0] data_tx, data_rx;
+
+    // Inteface between deco_unit and modulator
+    wire new_sample;
+    wire [7:0] sample;
 
     // test
     reg [26:0] count;
@@ -107,18 +110,26 @@ module top_level (
         .rx         (rx),
         .data_tx    (data_tx),
         .tx         (tx),
-        .sample     (sample)
+        .sample     (sample),
+        .new_sample (new_sample)
     );
 
-    // modulator #(
-    //     .FOO            (10),
-    //     .AM_CLKS_IN_PWM_STEPS   (`AM_PWM_STEPS),
-    //     .AM_PWM_STEPS           (`AM_PWM_STEPS)
-    // ) am_modulator (
-    //     .clk    (clk),
-    //     .rst    (rst),
-    //     .pwm    (pwm)
-    // );
+    modulator #(
+        .FOO            (10),
+        .AM_CLKS_IN_PWM_STEPS   (`AM_PWM_STEPS),
+        .AM_PWM_STEPS           (`AM_PWM_STEPS)
+    ) am_modulator (
+        .clk    (clk),
+        .rst    (rst),
+        .enable (1'b1),
+        /* configuration parameters */
+        .bits_per_sample    (8'd8),
+        .clks_per_pwm_step  (8'd2),
+        .new_sample         (new_sample),
+        /* data flow */
+        .sample (sample),
+        .pwm    (pwm)
+    );
 
     /* Led keep alive */
     always @(posedge clk) begin

@@ -1,7 +1,7 @@
 set_io hwclk            J3
 set_io rst              M15
 
-#set_io pwm              N16
+set_io pwm              P16
 
 # FTDI interface
 set_io in_out_245[0]    B10

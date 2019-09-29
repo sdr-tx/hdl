@@ -8,7 +8,8 @@ module decoder (
     output  reg [7:0] data_tx,
     output  reg tx,
     // interface with the modulators
-    output  reg [7:0] sample
+    output  reg [7:0] sample,
+    output  reg new_sample
 );
     
     // state machine
@@ -31,6 +32,7 @@ module decoder (
         end
         else begin
             tx <= 1'b0;
+            new_sample <= 1'b0;
             case (state)
                 ST_IDLE:
                 begin
@@ -69,6 +71,7 @@ module decoder (
                     if (data_rx == 8'hFF) begin
                         state <= ST_IDLE;
                     end else if (rx == 1'b1) begin
+                        new_sample <= 1'b1;
                         sample <= data_rx;
                     end
                 end
