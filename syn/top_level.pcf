@@ -30,6 +30,7 @@ set_io leds[7]          C3
 
 # --- test ---
 set_io fake_rst         N16
+set_io test_baudrate    F14
 
 
 

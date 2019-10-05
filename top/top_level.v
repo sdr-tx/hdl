@@ -13,7 +13,8 @@ module top_level (
     output  wr_245,
 
     // --- test ---
-    output  fake_rst
+    output  fake_rst,
+    output  test_baudrate
 );
     /***************************************************************************
      * test
@@ -33,13 +34,16 @@ module top_level (
     wire tx_rdy_si, tx_ack_si;
     wire [7:0] rx_data_si, tx_data_si;
 
+    // Inteface between fifo and modulator
+    wire [7:0] sample;
+    wire fifo_empty, read_sample;
+
     // Inteface between control_unit and deco_unit
     wire tx, rx;
     wire [7:0] data_tx, data_rx;
 
     // Inteface between deco_unit and modulator
     wire new_sample;
-    wire [7:0] sample;
 
     // test
     reg [26:0] count;
@@ -84,50 +88,37 @@ module top_level (
         .tx_ack_si  (tx_ack_si)
     );
 
-    controller #(
-        .FOO        (10)
-    ) control_unit (
+    fifo #(
+        .DEPTH_WIDTH    (1024),
+        .DATA_WIDTH     (8)
+    ) data_fifo (
         .clk        (clk),
         .rst        (rst),
-        // fifo simple interface
-        .rx_data_si (rx_data_si),
-        .rx_rdy_si  (rx_rdy_si),
-        .rx_ack_si  (rx_ack_si),
-        .tx_ack_si  (tx_ack_si),
-        .tx_data_si (tx_data_si),
-        .tx_rdy_si  (tx_rdy_si),
-        // communication with decoder
-        .tx         (tx),
-        .data_tx    (data_tx),
-        .rx         (rx),
-        .data_rx    (data_rx)
-    );
-
-    decoder deco_unit (
-        .clk        (clk),
-        .rst        (rst),
-        .data_rx    (data_rx),
-        .rx         (rx),
-        .data_tx    (data_tx),
-        .tx         (tx),
-        .sample     (sample),
-        .new_sample (new_sample)
-    );
+        /* write port */
+        .wr_data_i  (),
+        .wr_en_i    (),
+        /* read port */
+        .rd_data_o  (sample),
+        .rd_en_i    (read_sample),
+        /* control signal */
+        .full_o     (),
+        .empty_o    (fifo_empty)
+        );
 
     modulator #(
-        .FOO            (10),
-        .AM_CLKS_IN_PWM_STEPS   (`AM_PWM_STEPS),
-        .AM_PWM_STEPS           (`AM_PWM_STEPS)
+        .FOO                    (10),
+        .AM_CLKS_PER_PWM_STEP   (2),
+        .AM_PWM_STEP_PER_SAMPLE (256),
+        .AM_BITS_PER_SAMPLE     (8)
     ) am_modulator (
         .clk    (clk),
         .rst    (rst),
         .enable (1'b1),
-        /* configuration parameters */
-        .bits_per_sample    (8'd8),
-        .clks_per_pwm_step  (8'd2),
-        .new_sample         (new_sample),
-        /* data flow */
+        /* FIFO interface */
         .sample (sample),
+        .empty  (fifo_empty),
+        .read   (read_sample),
+        /* data flow */
         .pwm    (pwm)
     );
 

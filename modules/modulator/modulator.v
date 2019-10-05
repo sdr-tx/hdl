@@ -2,78 +2,93 @@
 
 module modulator #(
     parameter FOO = 10,
-    parameter AM_CLKS_IN_PWM_STEPS = `AM_CLKS_IN_PWM_STEPS,
-    parameter AM_PWM_STEPS = `AM_PWM_STEPS
+    parameter AM_CLKS_PER_PWM_STEP = 1,
+    parameter AM_PWM_STEP_PER_SAMPLE = 256,
+    parameter AM_BITS_PER_SAMPLE = 8
 )(
     input clk,
     input rst,
     input enable,
-    /* configuration parameters */
-    input [7:0] bits_per_sample,
-    input [7:0] clks_per_pwm_step,
-    input new_sample,
-    /* data flow */
+    /* FIFO interface */
     input [7:0] sample,
+    input empty,
+    output read,
+    /* data flow */
     output reg pwm
 );
     localparam WIDTH = $clog2(FOO);
 
     /* registers */
-    reg [WIDTH-1:0] count;
     wire tc_pwm_step, tc_pwm_symb;
-    reg [AM_PWM_STEPS-1:0] shift_register;
-    reg [7:0] sample_reg, counter_duty;
-    wire counter_rst;
-    assign counter_rst = new_sample | rst;
+    reg [7:0] counter_duty;
+    wire counter_rst, counter_start;
+
+    assign counter_rst = counter_start | rst;
 
     // counter to generate ticks at pwm-steps frequency
     module_counter #(
-        .WIDTH  (8)
+        .WIDTH  (2)
     ) inst_counter_pwm_steps (
-        .clk    (clk),
-        .rst    (counter_rst),
-        .enable (1'b1),
-        .max_count (clks_per_pwm_step),
-        .tc     (tc_pwm_step)
+        .clk        (clk),
+        .rst        (counter_rst),
+        .enable     (1'b1),
+        .max_count  (AM_CLKS_PER_PWM_STEP),
+        .tc         (tc_pwm_step)
     );
 
     // counter to generate ticks at pwm-symbols frequency
     module_counter #(
-        .WIDTH  (8)
+        .WIDTH  (AM_BITS_PER_SAMPLE)
     ) inst_counter_pwm_symb (
-        .clk    (clk),
-        .rst    (counter_rst),
-        .enable (tc_pwm_step),
-        .max_count (bits_per_sample),
-        .tc     (tc_pwm_symb)
+        .clk        (clk),
+        .rst        (counter_rst),
+        .enable     (tc_pwm_step),
+        .max_count  (AM_PWM_STEP_PER_SAMPLE),
+        .tc         (tc_pwm_symb)
     );
 
     // shift register to serialize each pwm-symbol
     always @ (posedge clk) begin
+        counter_start <= 1'b0;
+        read <= 1'b0;
+        pwm <= 1'b0;
+        
         if (rst == 1'b1) begin
-            sample_reg <= 0;
             counter_duty <= 0;
+            state <= ST_IDLE;
         end else if (enable == 1'b1) begin
-            if (new_sample == 1'b1) begin
-                counter_duty <= 8'd0;
-                sample_reg <= sample;
-            end else if (tc_pwm_step == 1'b1) begin
-                if(counter_duty > sample_reg)
-                    pwm <= 1'b0;
-                else begin
-                    counter_duty <= counter_duty + 1;
-                    pwm <= 1'b1;
+            case (state)
+                ST_IDLE:
+                begin
+                    if (empty == 1'b0) begin
+                        read <= 1'b1;
+                        counter_start <= 1'b1;
+                        state <= ST_RUNNING;
+                    end
                 end
-            end
-        end else begin
-            pwm <= 1'b0;
+
+                ST_RUNNING:
+                begin
+                    if (tc_pwm_step == 1'b1) begin
+                        if(counter_duty < sample)
+                            pwm <= 1'b1;
+                        else begin
+                            pwm <= 1'b0;
+                        end
+                        counter_duty <= counter_duty + 1;
+                    end
+                    if (tc_pwm_symb == 1'b1) begin
+                        state <= ST_IDLE;
+                    end
+                end
+
+                default:
+                begin
+                    state <= ST_IDLE;
+                end
+            endcase
         end
     end
 
-    // // output assignment
-    // assign pwm = counter_duty < sample ? 1:0;
-
-
 endmodule
-
 

@@ -9,7 +9,11 @@ module decoder (
     output  reg tx,
     // interface with the modulators
     output  reg [7:0] sample,
-    output  reg new_sample
+    output  reg new_sample,
+
+    /* test begin */
+    output  reg test_baudrate
+    /* test end */
 );
     
     // state machine
@@ -29,6 +33,10 @@ module decoder (
             REG_SYNC_WORD <= 8'b0;
             REG_CTRL01 <= 8'b0;
             state <= ST_IDLE;
+
+            /* test begin */
+            test_baudrate <= 1'b0;
+            /* test end */
         end
         else begin
             tx <= 1'b0;
@@ -73,6 +81,10 @@ module decoder (
                     end else if (rx == 1'b1) begin
                         new_sample <= 1'b1;
                         sample <= data_rx;
+
+                        /* test begin */
+                        test_baudrate <= ~test_baudrate;
+                        /* test end */
                     end
                 end
             endcase
