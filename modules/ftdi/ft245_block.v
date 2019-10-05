@@ -12,12 +12,12 @@ module ft245_block (
 
     // simple interface
     output reg  [7:0] rx_data_si,
-    output reg  rx_rdy_si,
-    input       rx_ack_si,
+    output reg  rx_valid_si,
+    input       rx_ready_si,
 
     input [7:0] tx_data_si,
-    input       tx_rdy_si,
-    output reg  tx_ack_si
+    input       tx_valid_si,
+    output reg  tx_ready_si
 );
     wire tx_oe_245;
     wire [7:0] in_245, out_245;
@@ -38,11 +38,11 @@ module ft245_block (
         .tx_oe_245      (tx_oe_245),
         // simple interface
         .rx_data_si     (rx_data_si),
-        .rx_rdy_si      (rx_rdy_si),
-        .rx_ack_si      (rx_ack_si),
+        .rx_valid_si      (rx_valid_si),
+        .rx_ready_si      (rx_ready_si),
         .tx_data_si     (tx_data_si),
-        .tx_rdy_si      (tx_rdy_si),
-        .tx_ack_si      (tx_ack_si)
+        .tx_valid_si      (tx_valid_si),
+        .tx_ready_si      (tx_ready_si)
     );
 
     genvar h;

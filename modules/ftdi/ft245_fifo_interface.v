@@ -19,12 +19,12 @@ module ft245_fifo_interface #(
 
     // simple interface rx
     output reg [7:0] rx_data_si,
-    output reg rx_rdy_si,
-    input rx_ack_si,
+    output reg rx_valid_si,
+    input rx_ready_si,
     // simple interface tx
     input [7:0] tx_data_si,
-    input tx_rdy_si,
-    output reg tx_ack_si
+    input tx_valid_si,
+    output reg tx_ready_si
 );
 
     localparam WAIT_TIME_RX = 30.0;
@@ -57,22 +57,18 @@ module ft245_fifo_interface #(
 
     reg [2:0] state;
     reg [$clog2(MAX_CNT):0] cnt;
-
+    
     reg rxf_245_i=0, rxf_245_ii=0, txe_245_i=0, txe_245_ii=0;
 
     always @(posedge clk) begin
-        rxf_245_i <= rxf_245;
-        rxf_245_ii <= rxf_245_i;
-        txe_245_i <= txe_245;
-        txe_245_ii <= txe_245_i;
         if (rst == 1'b1) begin
             tx_data_245 <= 0;
             rx_245 <= 1'b1;
             wr_245 <= 1'b1;
             tx_oe_245 <= 1'b0;
             rx_data_si <= 0;
-            rx_rdy_si <= 1'b0;
-            tx_ack_si <= 1'b0;
+            rx_valid_si <= 1'b0;
+            tx_ready_si <= 1'b0;
             state <= ST_IDLE;
             cnt <= 0;
             rxf_245_i <= 1'b1;
@@ -80,13 +76,16 @@ module ft245_fifo_interface #(
             txe_245_i <= 1'b1;
             txe_245_ii <= 1'b1;
         end else begin
-            rx_rdy_si <= rx_rdy_si & ~rx_ack_si;
+            rxf_245_i <= rxf_245;
+            rxf_245_ii <= rxf_245_i;
+            txe_245_i <= txe_245;
+            txe_245_ii <= txe_245_i;
             wr_245 <= 1'b1;
-            tx_ack_si <= 1'b0;
+            tx_ready_si <= 1'b0;
             case (state)
                 ST_IDLE:
                 begin
-                    if (rxf_245_ii == 1'b0  && rx_rdy_si == 1'b0) begin
+                    if (rxf_245_ii == 1'b0) begin
                         rxf_245_i <= 1'b1;
                         rxf_245_ii <= 1'b1;
                         txe_245_i <= 1'b1;
@@ -94,14 +93,14 @@ module ft245_fifo_interface #(
                         rx_245 <= 1'b0;
                         cnt <= 0;
                         state <= ST_WAIT_RX;
-                    end else if(txe_245_ii == 1'b0 && tx_rdy_si == 1'b1) begin
+                    end else if(txe_245_ii == 1'b0 && tx_valid_si == 1'b1) begin
                         rxf_245_i <= 1'b1;
                         rxf_245_ii <= 1'b1;
                         txe_245_i <= 1'b1;
                         txe_245_ii <= 1'b1;
                         tx_data_245 <= tx_data_si;
                         tx_oe_245 <= 1'b1;
-                        tx_ack_si <= 1'b1;
+                        tx_ready_si <= 1'b1;
                         state <= ST_SETUP_TX;
                         cnt <= CNT_SETUP_TX;
                     end
@@ -110,19 +109,20 @@ module ft245_fifo_interface #(
                 ST_WAIT_RX:
                 begin
                     cnt <= cnt + 1;
-                    if (cnt == CNT_WAIT_RX-1) begin
+                    if (cnt >= CNT_WAIT_RX-1) begin
                         rx_245 <= 1'b1;
                         state <= ST_INACTIVE_RX;
                         cnt <= 0;
                         rx_data_si <= rx_data_245;
-                        rx_rdy_si <= 1'b1;
+                        rx_valid_si <= 1'b1;
                     end
                 end
 
                 ST_INACTIVE_RX:
                 begin
-                    cnt <= cnt + 1;
-                    if (cnt == CNT_INACTIVE_RX-1) begin
+                    if (cnt < CNT_INACTIVE_RX) cnt <= cnt + 1;
+                    if ((cnt >= CNT_INACTIVE_RX-1) && (rx_ready_si & rx_valid_si)) begin
+                        rx_valid_si <= 1'b0;
                         state <= ST_IDLE;
                     end
                 end
@@ -130,7 +130,7 @@ module ft245_fifo_interface #(
                 ST_SETUP_TX:
                 begin
                     cnt <= cnt + 1;
-                    if(cnt == CNT_SETUP_TX) begin
+                    if(cnt >= CNT_SETUP_TX) begin
                         state <= ST_WAIT_TX;
                         wr_245 <= 1'b0;
                         cnt <= 0;
@@ -141,7 +141,7 @@ module ft245_fifo_interface #(
                 begin
                     cnt <= cnt + 1;
                     wr_245 <= 1'b0;
-                    if (cnt == CNT_ACTIVE_TX-1) begin
+                    if (cnt >= CNT_ACTIVE_TX-1) begin
                         cnt <= 0;
                         tx_oe_245 <= 1'b0;
                         state <= ST_IDLE;
