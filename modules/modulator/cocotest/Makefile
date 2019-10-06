@@ -1,5 +1,5 @@
 
-VERILOG_SOURCES= modulator.v ../counter/module_counter.v ../counter/counter.v
+VERILOG_SOURCES= ../modulator.v
 MODULE=test
 TOPLEVEL=modulator
 include $(shell cocotb-config --makefiles)/Makefile.inc

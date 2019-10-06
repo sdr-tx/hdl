@@ -22,7 +22,7 @@ module module_counter #(
             count <=0;
         else if ( enable == 1'b1 ) begin
             count <= count + 1;
-            if ( count == max_count ) begin
+            if ( count >= max_count ) begin
                 count <= 0;
                 tc2 <= 1'b1;
             end

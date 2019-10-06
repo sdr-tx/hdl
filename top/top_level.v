@@ -4,6 +4,9 @@ module top_level (
     input   rst,
     output  [7:0] leds,
     output  pwm,
+    output read,
+    output fifo_empty,
+    output fifo_full,
 
     // FT245 interface
     inout   [7:0] in_out_245,
@@ -13,6 +16,8 @@ module top_level (
     output  wr_245,
 
     // --- test ---
+    output  tc_pwm_step,
+    output  tc_pwm_symb,
     output  fake_rst,
     output  test_baudrate
 );
@@ -30,13 +35,13 @@ module top_level (
     reg [7:0] led_reg;
 
     // FT245 - Simple Interface
-    wire rx_rdy_si, rx_ack_si;
-    wire tx_rdy_si, tx_ack_si;
+    wire rx_valid_si, rx_ready_si;
+    wire tx_valid_si, tx_ready_si;
     wire [7:0] rx_data_si, tx_data_si;
 
     // Inteface between fifo and modulator
     wire [7:0] sample;
-    wire fifo_empty, read_sample;
+    wire read_sample;
 
     // Inteface between control_unit and deco_unit
     wire tx, rx;
@@ -48,12 +53,13 @@ module top_level (
     // test
     reg [26:0] count;
 
+    assign read = read_sample;
 
     /***************************************************************************
      * assignments
      ***************************************************************************
      */
-    assign leds = led_reg;
+    assign leds = sample;
 
 
     /***************************************************************************
@@ -79,37 +85,38 @@ module top_level (
         .rx_245     (rx_245),
         .txe_245    (txe_245),
         .wr_245     (wr_245),
-        // simple interface
+        // simple interface - RX
         .rx_data_si (rx_data_si),
-        .rx_rdy_si  (rx_rdy_si),
-        .rx_ack_si  (rx_ack_si),
-        .tx_data_si (tx_data_si),
-        .tx_rdy_si  (tx_rdy_si),
-        .tx_ack_si  (tx_ack_si)
+        .rx_valid_si(rx_valid_si),
+        .rx_ready_si(!fifo_full),
+        // simple interface - TX
+        .tx_data_si (),
+        .tx_valid_si(),
+        .tx_ready_si()
     );
 
     fifo #(
-        .DEPTH_WIDTH    (1024),
+        .DEPTH_WIDTH    (10),
         .DATA_WIDTH     (8)
     ) data_fifo (
         .clk        (clk),
         .rst        (rst),
         /* write port */
-        .wr_data_i  (),
-        .wr_en_i    (),
+        .wr_data_i  (rx_data_si),
+        .wr_en_i    (rx_valid_si & !fifo_full),
         /* read port */
         .rd_data_o  (sample),
         .rd_en_i    (read_sample),
         /* control signal */
-        .full_o     (),
+        .full_o     (fifo_full),
         .empty_o    (fifo_empty)
         );
 
     modulator #(
-        .FOO                    (10),
-        .AM_CLKS_PER_PWM_STEP   (2),
-        .AM_PWM_STEP_PER_SAMPLE (256),
-        .AM_BITS_PER_SAMPLE     (8)
+        .FOO                    ('d10),
+        .AM_CLKS_PER_PWM_STEP   ('d1),
+        .AM_PWM_STEP_PER_SAMPLE ('d63),
+        .AM_BITS_PER_SAMPLE     ('d8)
     ) am_modulator (
         .clk    (clk),
         .rst    (rst),
@@ -119,7 +126,10 @@ module top_level (
         .empty  (fifo_empty),
         .read   (read_sample),
         /* data flow */
-        .pwm    (pwm)
+        .pwm    (pwm),
+
+        .tc_pwm_step(tc_pwm_step),
+        .tc_pwm_symb(tc_pwm_symb)
     );
 
     /* Led keep alive */
