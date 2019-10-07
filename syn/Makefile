@@ -1,28 +1,19 @@
-
 TOP := top_level
-SRC := $(filter-out $(wildcard ../modules/test_modules/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
+SRC := $(wildcard ../modules/**/*.v ../top/$(TOP).v)
 INC := ../inc/
 BUILD     = ../build
-DEFINES := $(addprefix -D, $(DEF))
 
-
-# PNR OPT
 #PACKAGE = tq144:4k
-#DEVICE = 8k
-
 PACKAGE = ct256
 DEVICE = 8k
 PCF = $(TOP).pcf
 
 all: syn pnr pack
-
-
-
 .phony: show, prog, load-cram, clean
 
-syn: $(TOP).blif
-pnr : $(TOP).asc
-pack: $(TOP).bin
+syn: $(BUILD)/$(TOP).json
+pnr : $(BUILD)/$(TOP).asc
+pack: $(BUILD)/$(TOP).bin
 
 
 show:
@@ -32,29 +23,23 @@ show-defines:
 	echo $(DEFINES)
 
 show-blocks: $(SRC)
-	# http://www.clifford.at/yosys/cmd_show.html
-	#yosys -p "read_verilog -I$(INC) $(DEFINES) ../top/$(TOP).v; show"
-	yosys -p "read_verilog -I$(INC) $(DEFINES) ../top/$(TOP).v; show -format svg -prefix ./show"
+	yosys -p "read_verilog -I$(INC) ../top/$(TOP).v; show -format svg -prefix ./show"
 
-	
-
-$(TOP).blif: $(SRC)
+$(BUILD)/$(TOP).blif $(BUILD)/$(TOP).json: $(SRC)
 	mkdir -p $(BUILD)
+	yosys -p "read_verilog $(SRC); synth_ice40 -top $(TOP) -blif $(BUILD)/$(TOP).blif -json $(BUILD)/$(TOP).json"
 
-	yosys -p "read_verilog -I$(INC) $(DEFINES) $(SRC); synth_ice40 -top $(TOP) -blif $(BUILD)/$(TOP).blif"
-	#-DUSING_UART=1
+$(BUILD)/$(TOP).asc: $(BUILD)/$(TOP).json $(PCF)
+	nextpnr-ice40 --hx8k --package $(PACKAGE) --pcf $(PCF) --json $(BUILD)/$(TOP).json --asc $(BUILD)/$(TOP).asc
 
-$(TOP).asc: $(TOP).blif $(PCF)
-	arachne-pnr -r -d $(DEVICE) -P $(PACKAGE) -p $(PCF) $(BUILD)/$(TOP).blif -o $(BUILD)/$(TOP).asc
-
-$(TOP).bin: $(TOP).asc
+$(BUILD)/$(TOP).bin: $(BUILD)/$(TOP).asc
 	icepack $(BUILD)/$(TOP).asc $(BUILD)/$(TOP).bin
 
-prog: $(TOP).bin
+prog: $(BUILD)/$(TOP).bin
 	@echo "Writing $(TOP).bin into the flash memory"
 	iceprog $(BUILD)/$(TOP).bin
 
-load-cram: $(TOP).bin
+load-cram: $(BUILD)/$(TOP).bin
 	@echo "Loading $(TOP).bin into the CRAM"
 	iceprog -S $(BUILD)/$(TOP).bin
 
