@@ -1,7 +1,7 @@
 `timescale 1ns/1ps
 `include "../../inc/project_defines.v"
 
-module modulator #(
+module modulator_foo #(
     parameter FOO = 'd10,
     parameter AM_CLKS_PER_PWM_STEP = 'd1,
     parameter AM_PWM_STEP_PER_SAMPLE = 'd255,
