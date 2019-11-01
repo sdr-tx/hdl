@@ -1,3 +1,4 @@
+`include "../inc/module_params.v"
 
 module top_level (
     input   hwclk,
@@ -59,7 +60,7 @@ module top_level (
      * assignments
      ***************************************************************************
      */
-    assign leds = sample;
+    assign leds = led_reg;
 
 
     /***************************************************************************
@@ -114,9 +115,9 @@ module top_level (
 
     modulator #(
         .FOO                    ('d10),
-        .AM_CLKS_PER_PWM_STEP   ('d1),
-        .AM_PWM_STEP_PER_SAMPLE ('d63),
-        .AM_BITS_PER_SAMPLE     ('d8)
+        .AM_CLKS_PER_PWM_STEP   (`AM_CLKS_PER_PWM_STEP), //'d1),
+        .AM_PWM_STEP_PER_SAMPLE (`AM_PWM_STEP_PER_SAMPLE), //'d63),
+        .AM_BITS_PER_SAMPLE     (`AM_BITS_PER_SAMPLE) //'d8)
     ) am_modulator (
         .clk    (clk),
         .rst    (rst),
