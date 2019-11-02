@@ -115,10 +115,13 @@ module top_level (
 
     modulator #(
         .FOO                    ('d10),
-        .AM_CLKS_PER_PWM_STEP   (`AM_CLKS_PER_PWM_STEP), //'d1),
-        .AM_PWM_STEP_PER_SAMPLE (`AM_PWM_STEP_PER_SAMPLE), //'d63),
-        .AM_BITS_PER_SAMPLE     (`AM_BITS_PER_SAMPLE) //'d8)
-    ) am_modulator (
+        // .AM_CLKS_PER_PWM_STEP   ('d1),
+        // .AM_PWM_STEP_PER_SAMPLE ('d63),
+        // .AM_BITS_PER_SAMPLE     ('d8)
+
+        .PSK_CLKS_PER_BIT       ('d1),
+        .PSK_BITS_PER_SYMBOL    ('d4)
+    ) top_modulator (
         .clk    (clk),
         .rst    (rst),
         .enable (1'b1),
@@ -127,10 +130,10 @@ module top_level (
         .empty  (fifo_empty),
         .read   (read_sample),
         /* data flow */
-        .pwm    (pwm),
+        .pwm    (pwm)//,
 
-        .tc_pwm_step(tc_pwm_step),
-        .tc_pwm_symb(tc_pwm_symb)
+        // .tc_pwm_step(tc_pwm_step),
+        // .tc_pwm_symb(tc_pwm_symb)
     );
 
     /* Led keep alive */
