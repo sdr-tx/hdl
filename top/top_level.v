@@ -1,3 +1,4 @@
+`include "../inc/module_params.v"
 
 module top_level (
     input   hwclk,
@@ -59,7 +60,7 @@ module top_level (
      * assignments
      ***************************************************************************
      */
-    assign leds = sample;
+    assign leds = led_reg;
 
 
     /***************************************************************************

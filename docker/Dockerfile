@@ -26,6 +26,9 @@ RUN rm -rf /build/
 # gnuradio installation
 RUN apt install -y gnuradio
 
-
+# Mercurial module instalation
+ARG REBUILD
+RUN echo ${REBUILD} && git clone https://github.com/sdr-tx/gnuradio-module module && \
+    cd module && mkdir build && cd build && cmake .. && make install
 
 
