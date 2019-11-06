@@ -28,7 +28,9 @@ RUN apt install -y gnuradio
 
 # Mercurial module instalation
 ARG REBUILD
-RUN echo ${REBUILD} && git clone https://github.com/sdr-tx/gnuradio-module module && \
-    cd module && mkdir build && cd build && cmake .. && make install
+#RUN echo ${REBUILD} && git clone https://github.com/sdr-tx/gnuradio-module module && \
+RUN mkdir module
+COPY docker/gnuradio-module module
+RUN cd module && mkdir build && cd build && cmake .. && make install
 
 

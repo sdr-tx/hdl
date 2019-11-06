@@ -15,7 +15,6 @@ docker run -it --rm \
            -v /var/run/dbus:/var/run/dbus \
            -v /usr/share/git/completion:/usr/share/git/completion \
            -h $(hostname) \
-           -u$(id -u):$(id -g) \
            -e DISPLAY=$DISPLAY \
            --privileged \
            -i -w $PWD -t -u $(id -u):$(id -g) --rm \
