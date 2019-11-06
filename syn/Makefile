@@ -1,9 +1,14 @@
 TOP := top_level
-SRC := $(wildcard ../modules/**/*.v ../top/$(TOP).v)
+# default modulator
+MOD := am
+SRC := $(filter-out $(wildcard ../modules/modulator_*/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
+SRC += ../modules/modulator_$(MOD)/*.v
 INC := ../inc/
-BUILD     = ../build
+BUILD = ../build
 
+# Mercurial SDR Board
 #PACKAGE = tq144:4k
+# iCE40-HX8K Breakout Board
 PACKAGE = ct256
 DEVICE = 8k
 PCF = $(TOP).pcf
@@ -17,10 +22,10 @@ pack: $(BUILD)/$(TOP).bin
 
 
 show:
-	echo $(SRC)
+	@echo $(SRC)
 
 show-defines:
-	echo $(DEFINES)
+	@echo $(DEFINES)
 
 show-blocks: $(SRC)
 	yosys -p "read_verilog -I$(INC) ../top/$(TOP).v; show -format svg -prefix ./show"
