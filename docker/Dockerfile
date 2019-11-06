@@ -28,8 +28,8 @@ RUN apt install -y gnuradio
 
 # mercurial grc module dependencies
 RUN apt update && apt-get install -y --no-install-recommends \
-    python3-pip && apt clean
-RUN pip3 install pyserial numpy
+    python-pip && apt clean
+RUN pip2 install pyserial numpy
 
 # Mercurial module instalation
 ARG REBUILD
