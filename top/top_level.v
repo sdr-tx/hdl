@@ -114,13 +114,14 @@ module top_level (
         );
 
     modulator #(
-        .FOO                    ('d10),
+        .PARAMETER01    (`PARAMETER01),
+        .PARAMETER02    (`PARAMETER02),
+        .PARAMETER03    (`PARAMETER03)
         // .AM_CLKS_PER_PWM_STEP   ('d1),
         // .AM_PWM_STEP_PER_SAMPLE ('d63),
         // .AM_BITS_PER_SAMPLE     ('d8)
-
-        .PSK_CLKS_PER_BIT       ('d1),
-        .PSK_BITS_PER_SYMBOL    ('d4)
+        // .PSK_CLKS_PER_BIT       ('d1),
+        // .PSK_BITS_PER_SYMBOL    ('d4)
     ) top_modulator (
         .clk    (clk),
         .rst    (rst),
@@ -131,7 +132,6 @@ module top_level (
         .read   (read_sample),
         /* data flow */
         .pwm    (pwm)//,
-
         // .tc_pwm_step(tc_pwm_step),
         // .tc_pwm_symb(tc_pwm_symb)
     );

@@ -1,8 +1,8 @@
 `ifndef __PROJECT_CONFIG_V
 `define __PROJECT_CONFIG_V
 
-`define AM_CLKS_PER_PWM_STEP 1
-`define AM_PWM_STEP_PER_SAMPLE 63
-`define AM_BITS_PER_SAMPLE 8
+`define PARAMETER01 1
+`define PARAMETER02 63
+`define PARAMETER03 8
 
 `endif

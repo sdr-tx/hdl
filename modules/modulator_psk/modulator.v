@@ -2,9 +2,9 @@
 //`include "../../inc/project_defines.v"
 
 module modulator #(
-    parameter FOO = 'd10,
-    parameter PSK_CLKS_PER_BIT = 4,
-    parameter PSK_BITS_PER_SYMBOL = 4
+    parameter PARAMETER01 = 4,  // PSK_CLKS_PER_BIT
+    parameter PARAMETER02 = 4,  // PSK_BITS_PER_SYMBOL
+    parameter PARAMETER03 = 0
 )(
     input clk,
     input rst,
@@ -16,9 +16,13 @@ module modulator #(
     /* data flow */
     output pwm
 );
+    // real psk modulator parameters
+    localparam PSK_CLKS_PER_BIT     = PARAMETER01;
+    localparam PSK_BITS_PER_SYMBOL  = PARAMETER02;
+
     localparam WIDTH_COUNT_CLKS = $clog2(PSK_CLKS_PER_BIT);
     localparam WIDTH_COUNT_BITS = $clog2(PSK_BITS_PER_SYMBOL);
-    localparam ST_START = 0;
+    localparam ST_IDLE = 0;
     localparam ST_RUNNING = 1;
 
 
@@ -35,11 +39,11 @@ module modulator #(
         if (rst == 1'b1) begin
             counter_bits <= 0;
             counter_clks <= 0;
-            state <= ST_START;
+            state <= ST_IDLE;
             sample_reg <= 'd0;
         end else if (enable == 1'b1) begin
             case (state)
-                ST_START:
+                ST_IDLE:
                 begin
                     if (empty == 1'b0) begin
                         read <= 1'b1;
@@ -67,14 +71,14 @@ module modulator #(
                             counter_clks <= 0;
                             sample_reg <= sample;
                         end else begin
-                            state <= ST_START;
+                            state <= ST_IDLE;
                         end
                     end
                 end
 
                 default:
                 begin
-                    state <= ST_START;
+                    state <= ST_IDLE;
                 end
             endcase
         end

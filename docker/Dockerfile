@@ -26,11 +26,18 @@ RUN rm -rf /build/
 # gnuradio installation
 RUN apt install -y gnuradio
 
+# mercurial grc module dependencies
+RUN apt update && apt-get install -y --no-install-recommends \
+    python3-pip && apt clean
+RUN pip3 install pyserial numpy
+
 # Mercurial module instalation
 ARG REBUILD
 #RUN echo ${REBUILD} && git clone https://github.com/sdr-tx/gnuradio-module module && \
 RUN mkdir module
 COPY docker/gnuradio-module module
 RUN cd module && mkdir build && cd build && cmake .. && make install
+
+
 
 

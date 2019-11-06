@@ -2,10 +2,9 @@
 `include "../../inc/project_defines.v"
 
 module modulator_foo #(
-    parameter FOO = 'd10,
-    parameter AM_CLKS_PER_PWM_STEP = 'd1,
-    parameter AM_PWM_STEP_PER_SAMPLE = 'd255,
-    parameter AM_BITS_PER_SAMPLE = 'd8
+    parameter PARAMETER01 = 1,      // AM_CLKS_PER_PWM_STEP
+    parameter PARAMETER02 = 255,    // AM_PWM_STEP_PER_SAMPLE
+    parameter PARAMETER03 = 8       // AM_BITS_PER_SAMPLE
 )(
     input clk,
     input rst,
@@ -20,7 +19,11 @@ module modulator_foo #(
     output tc_pwm_step,
     output tc_pwm_symb
 );
-    localparam WIDTH = $clog2(FOO);
+    // real am modulator parameters
+    localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01;
+    localparam AM_PWM_STEP_PER_SAMPLE   = PARAMETER02;
+    localparam AM_BITS_PER_SAMPLE       = PARAMETER02;
+
     localparam ST_IDLE=0;
     localparam ST_RUNNING=1;
 
