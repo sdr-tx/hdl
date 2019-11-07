@@ -1,80 +1,153 @@
-// Blink an LED provided an input clock
-/* module */
-module top_level (hwclk, led1, led2, led3, led4, led5, led6, led7, led8 );
-    /* I/O */
-    input hwclk;
-    output led1;
-    output led2;
-    output led3;
-    output led4;
-    output led5;
-    output led6;
-    output led7;
-    output led8;
+`include "../inc/module_params.v"
 
-    reg clk,clk2,aux,aux2;
+module top_level (
+    input   hwclk,
+    input   rst,
+    output  [7:0] leds,
+    output  pwm,
+    output read,
+    output fifo_empty,
+    output fifo_full,
 
-    /* Counter register */
-    reg [7:0] counter = 8'b0;
-    reg [23:0] second = 24'b0;
+    // FT245 interface
+    inout   [7:0] in_out_245,
+    input   rxf_245,
+    output  rx_245,
+    input   txe_245,
+    output  wr_245,
 
-    reg [7:0] counter2 = 8'b0;
-    reg [23:0] second2 = 24'b0;
+    // --- test ---
+    output  tc_pwm_step,
+    output  tc_pwm_symb,
+    output  fake_rst,
+    output  test_baudrate
+);
+    /***************************************************************************
+     * test
+     ***************************************************************************
+     */
+    assign fake_rst = 1'b1;
 
-    wire salida;
+    /***************************************************************************
+     * signals
+     ***************************************************************************
+     */
+    reg clk;
+    reg [7:0] led_reg;
 
-    /* my pll */
-    pll my_pll275MHZ(
-	.clock_in   (hwclk),
-	.clock_out  (clk),
-	.locked     (aux)
-	);
+    // FT245 - Simple Interface
+    wire rx_valid_si, rx_ready_si;
+    wire tx_valid_si, tx_ready_si;
+    wire [7:0] rx_data_si, tx_data_si;
 
-     /* my pll */
-    pll2 my_pll16MHZ(
-    .clock_in   (hwclk),
-    .clock_out  (clk2),
-    .locked     (aux2)
+    // Inteface between fifo and modulator
+    wire [7:0] sample;
+    wire read_sample;
+
+    // Inteface between control_unit and deco_unit
+    wire tx, rx;
+    wire [7:0] data_tx, data_rx;
+
+    // Inteface between deco_unit and modulator
+    wire new_sample;
+
+    // test
+    reg [26:0] count;
+
+    assign read = read_sample;
+
+    /***************************************************************************
+     * assignments
+     ***************************************************************************
+     */
+    assign leds = led_reg;
+
+
+    /***************************************************************************
+     * module instances
+     ***************************************************************************
+     */
+    /* pll */
+    pll_128MHz system_clk(
+        .clock_in   (hwclk),
+        .clock_out  (clk),
+        .locked     (aux)
     );
 
-    wire salida;
+    /* FT245 wrapper
+     * Interface between FT245 FIFO and SIMPLE INTERFACE
+     */
+    ft245_block ft245_wrapper (
+        .clk        (clk),
+        .rst        (rst),
+        // FT245 interface
+        .in_out_245 (in_out_245),
+        .rxf_245    (rxf_245),
+        .rx_245     (rx_245),
+        .txe_245    (txe_245),
+        .wr_245     (wr_245),
+        // simple interface - RX
+        .rx_data_si (rx_data_si),
+        .rx_valid_si(rx_valid_si),
+        .rx_ready_si(!fifo_full),
+        // simple interface - TX
+        .tx_data_si (),
+        .tx_valid_si(),
+        .tx_ready_si()
+    );
 
-    //salida <= clk & clk;
+    fifo #(
+        .DEPTH_WIDTH    (10),
+        .DATA_WIDTH     (8)
+    ) data_fifo (
+        .clk        (clk),
+        .rst        (rst),
+        /* write port */
+        .wr_data_i  (rx_data_si),
+        .wr_en_i    (rx_valid_si & !fifo_full),
+        /* read port */
+        .rd_data_o  (sample),
+        .rd_en_i    (read_sample),
+        /* control signal */
+        .full_o     (fifo_full),
+        .empty_o    (fifo_empty)
+        );
 
+    modulator #(
+        .PARAMETER01    (`PARAMETER01),
+        .PARAMETER02    (`PARAMETER02),
+        .PARAMETER03    (`PARAMETER03)
+        // .AM_CLKS_PER_PWM_STEP   ('d1),
+        // .AM_PWM_STEP_PER_SAMPLE ('d63),
+        // .AM_BITS_PER_SAMPLE     ('d8)
+        // .PSK_CLKS_PER_BIT       ('d1),
+        // .PSK_BITS_PER_SYMBOL    ('d4)
+    ) top_modulator (
+        .clk    (clk),
+        .rst    (rst),
+        .enable (1'b1),
+        /* FIFO interface */
+        .sample (sample),
+        .empty  (fifo_empty),
+        .read   (read_sample),
+        /* data flow */
+        .pwm    (pwm)//,
+        // .tc_pwm_step(tc_pwm_step),
+        // .tc_pwm_symb(tc_pwm_symb)
+    );
 
-    /* LED drivers */
-    assign led1 = counter[0];
-    assign led2 = counter[1];
-    assign led3 = counter[2];
-    assign led4 = counter[3];
-    assign led5 = counter2[0];
-    assign led6 = clk & counter[2];
-    assign led7 = clk2 & clk;
-    assign led8 = clk;
-
-    /* always */
-    always @ (posedge clk) begin
-        second <= second + 1;
-
-        // second counter
-        if ( second == 24'd16000000 )
-        begin
-            counter <= counter + 1;
-            second <= 24'd0;
-        end
-    end
-
-
-        /* always */
-    always @ (posedge clk2) begin
-        second2 <= second2 + 1;
-
-        // second counter
-        if ( second2 == 24'd16000000 )
-        begin
-            counter2 <= counter2 + 1;
-            second2 <= 24'd0;
+    /* Led keep alive */
+    always @(posedge clk) begin
+        if (rst == 1'b1) begin
+            led_reg = 8'hFF;
+            count = 27'd0;
+        end else if (count == 27'd126000000) begin
+            led_reg = led_reg + 1;
+            count = 27'd0;
+        end else begin
+            count = count + 1;
         end
     end
 
 endmodule
+
