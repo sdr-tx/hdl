@@ -1,8 +1,8 @@
 TOP := top_level
 # default modulator
 MOD := am
-SRC := $(filter-out $(wildcard ../modules/modulator_*/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
-SRC += ../modules/modulator_$(MOD)/*.v
+SRC := $(wildcard ../modules/modulator_$(MOD)/*.v)
+SRC += $(filter-out $(wildcard ../modules/modulator_*/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
 INC := ../inc/
 BUILD = ../build
 
