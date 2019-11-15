@@ -14,7 +14,10 @@ module modulator #(
     input empty,
     output reg read,
     /* data flow */
-    output pwm
+    output pwm,
+
+    // test
+    output reg symb_clk
 );
     localparam WIDTH_COUNT_CLKS = $clog2(PSK_CLKS_PER_BIT);
     localparam WIDTH_COUNT_BITS = $clog2(PSK_BITS_PER_SYMBOL);
@@ -37,6 +40,7 @@ module modulator #(
             counter_clks <= 0;
             state <= ST_START;
             sample_reg <= 'd0;
+            symb_clk <= 0;
         end else if (enable == 1'b1) begin
             case (state)
                 ST_START:
@@ -66,6 +70,7 @@ module modulator #(
                             counter_bits <= 0;
                             counter_clks <= 0;
                             sample_reg <= sample;
+                            symb_clk <= ~symb_clk;
                         end else begin
                             state <= ST_START;
                         end

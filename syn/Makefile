@@ -3,9 +3,10 @@ SRC := $(wildcard ../modules/**/*.v ../top/$(TOP).v)
 INC := ../inc/
 BUILD     = ../build
 
-#PACKAGE = tq144:4k
-PACKAGE = ct256
+PACKAGE = tq144:4k
 DEVICE = 8k
+#PACKAGE = ct256
+#DEVICE = 8k
 PCF = $(TOP).pcf
 
 all: syn pnr pack

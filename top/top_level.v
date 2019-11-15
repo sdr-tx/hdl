@@ -5,9 +5,9 @@ module top_level (
     input   rst,
     output  [7:0] leds,
     output  pwm,
-    output read,
-    output fifo_empty,
-    output fifo_full,
+//    output read,
+//    output fifo_empty,
+//    output fifo_full,
 
     // FT245 interface
     inout   [7:0] in_out_245,
@@ -17,10 +17,11 @@ module top_level (
     output  wr_245,
 
     // --- test ---
-    output  tc_pwm_step,
-    output  tc_pwm_symb,
-    output  fake_rst,
-    output  test_baudrate
+    output  symb_clk
+//    output  tc_pwm_step,
+//    output  tc_pwm_symb,
+//    output  fake_rst,
+//    output  test_baudrate
 );
     /***************************************************************************
      * test
@@ -53,7 +54,6 @@ module top_level (
 
     // test
     reg [26:0] count;
-
     assign read = read_sample;
 
     /***************************************************************************
@@ -130,8 +130,9 @@ module top_level (
         .empty  (fifo_empty),
         .read   (read_sample),
         /* data flow */
-        .pwm    (pwm)//,
+        .pwm    (pwm),
 
+        .symb_clk(symb_clk)
         // .tc_pwm_step(tc_pwm_step),
         // .tc_pwm_symb(tc_pwm_symb)
     );
