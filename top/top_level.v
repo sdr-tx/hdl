@@ -5,8 +5,11 @@ module top_level (
     input   rst,
     output  [7:0] leds,
     output  pwm,
+    output  pwm_diff_p,
+    output  pwm_diff_n,
+    output  pwm_pin,
 //    output read,
-//    output fifo_empty,
+    output fifo_empty,
 //    output fifo_full,
 
     // FT245 interface
@@ -54,6 +57,7 @@ module top_level (
 
     // test
     reg [26:0] count;
+    wire pwm_signal;
     assign read = read_sample;
 
     /***************************************************************************
@@ -61,7 +65,10 @@ module top_level (
      ***************************************************************************
      */
     assign leds = led_reg;
-
+    assign pwm = pwm_signal;
+    assign pwm_diff_p = pwm_signal;
+    assign pwm_diff_n = ~pwm_signal;
+    assign pwm_pin = pwm_signal;
 
     /***************************************************************************
      * module instances
@@ -119,8 +126,8 @@ module top_level (
         // .AM_PWM_STEP_PER_SAMPLE ('d63),
         // .AM_BITS_PER_SAMPLE     ('d8)
 
-        .PSK_CLKS_PER_BIT       ('d1),
-        .PSK_BITS_PER_SYMBOL    ('d4)
+        .PSK_CLKS_PER_BIT       ('d4),
+        .PSK_BITS_PER_SYMBOL    ('d8)
     ) top_modulator (
         .clk    (clk),
         .rst    (rst),
@@ -130,7 +137,7 @@ module top_level (
         .empty  (fifo_empty),
         .read   (read_sample),
         /* data flow */
-        .pwm    (pwm),
+        .pwm    (pwm_signal),
 
         .symb_clk(symb_clk)
         // .tc_pwm_step(tc_pwm_step),

@@ -3,7 +3,7 @@
 
 module modulator #(
     parameter FOO = 'd10,
-    parameter PSK_CLKS_PER_BIT = 4,
+    parameter PSK_CLKS_PER_BIT = 100,
     parameter PSK_BITS_PER_SYMBOL = 4
 )(
     input clk,
