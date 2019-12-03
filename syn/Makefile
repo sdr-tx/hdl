@@ -13,7 +13,7 @@ PACKAGE = ct256
 DEVICE = 8k
 PCF = $(TOP).pcf
 
-all: syn pnr pack
+all:  syn pnr pack
 .phony: show, prog, load-cram, clean
 
 syn: $(BUILD)/$(TOP).json
@@ -49,4 +49,4 @@ load-cram: $(BUILD)/$(TOP).bin
 	iceprog -S $(BUILD)/$(TOP).bin
 
 clean:
-	rm $(BUILD)/$(TOP).bin $(BUILD)/$(TOP).asc $(BUILD)/$(TOP).blif --force
+	rm $(BUILD)/$(TOP).bin $(BUILD)/$(TOP).asc $(BUILD)/$(TOP).json $(BUILD)/$(TOP).blif --force
