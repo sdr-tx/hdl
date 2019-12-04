@@ -3,26 +3,20 @@ TOP := top_level
 MOD := am
 #deault board
 HW:= mercurial
+
 SRC := $(wildcard ../modules/modulator_$(MOD)/*.v)
 SRC += $(filter-out $(wildcard ../modules/modulator_*/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
 INC := ../inc/
 BUILD = ../build
 
-
-
-PACKAGE = tq144:4k
-
-
 ifeq ($(HW),bk)
 	PACKAGE = ct256
 	HW = breakout
+	PCF = breakout.pcf
 else 
-
+	PACKAGE = tq144:4k
+	PCF = mercurial.pcf
 endif
-
-
-PCF = $(HW).pcf
-
 
 all:  syn pnr pack
 .phony: show, prog, load-cram, clean
