@@ -1,23 +1,28 @@
 TOP := top_level
 # default modulator
 MOD := am
+#deault board
+HW:= mercurial
 SRC := $(wildcard ../modules/modulator_$(MOD)/*.v)
 SRC += $(filter-out $(wildcard ../modules/modulator_*/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
 INC := ../inc/
 BUILD = ../build
 
-<<<<<<< HEAD
-# Mercurial SDR Board
-#PACKAGE = tq144:4k
-# iCE40-HX8K Breakout Board
-PACKAGE = ct256
-=======
+
+
 PACKAGE = tq144:4k
->>>>>>> mercurial-board
-DEVICE = 8k
-#PACKAGE = ct256
-#DEVICE = 8k
-PCF = $(TOP).pcf
+
+
+ifeq ($(HW),bk)
+	PACKAGE = ct256
+	HW = breakout
+else 
+
+endif
+
+
+PCF = $(HW).pcf
+
 
 all:  syn pnr pack
 .phony: show, prog, load-cram, clean

@@ -16,8 +16,11 @@ module modulator #(
     /* data flow */
     output reg pwm,
 
-    output tc_pwm_step,
-    output tc_pwm_symb
+//    output tc_pwm_step,
+//    output tc_pwm_symb,
+
+    // test
+    output reg symb_clk
 );
     // real am modulator parameters
     localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01;
