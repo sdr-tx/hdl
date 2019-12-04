@@ -2,9 +2,15 @@
 //`include "../../inc/project_defines.v"
 
 module modulator #(
+<<<<<<< HEAD
     parameter PARAMETER01 = 4,  // PSK_CLKS_PER_BIT
     parameter PARAMETER02 = 4,  // PSK_BITS_PER_SYMBOL
     parameter PARAMETER03 = 0
+=======
+    parameter FOO = 'd10,
+    parameter PSK_CLKS_PER_BIT = 100,
+    parameter PSK_BITS_PER_SYMBOL = 4
+>>>>>>> mercurial-board
 )(
     input clk,
     input rst,
@@ -14,7 +20,10 @@ module modulator #(
     input empty,
     output reg read,
     /* data flow */
-    output pwm
+    output pwm,
+
+    // test
+    output reg symb_clk
 );
     // real psk modulator parameters
     localparam PSK_CLKS_PER_BIT     = PARAMETER01;
@@ -41,6 +50,7 @@ module modulator #(
             counter_clks <= 0;
             state <= ST_IDLE;
             sample_reg <= 'd0;
+            symb_clk <= 0;
         end else if (enable == 1'b1) begin
             case (state)
                 ST_IDLE:
@@ -70,6 +80,7 @@ module modulator #(
                             counter_bits <= 0;
                             counter_clks <= 0;
                             sample_reg <= sample;
+                            symb_clk <= ~symb_clk;
                         end else begin
                             state <= ST_IDLE;
                         end

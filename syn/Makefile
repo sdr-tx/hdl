@@ -6,11 +6,17 @@ SRC += $(filter-out $(wildcard ../modules/modulator_*/*.v), $(wildcard ../module
 INC := ../inc/
 BUILD = ../build
 
+<<<<<<< HEAD
 # Mercurial SDR Board
 #PACKAGE = tq144:4k
 # iCE40-HX8K Breakout Board
 PACKAGE = ct256
+=======
+PACKAGE = tq144:4k
+>>>>>>> mercurial-board
 DEVICE = 8k
+#PACKAGE = ct256
+#DEVICE = 8k
 PCF = $(TOP).pcf
 
 all:  syn pnr pack
