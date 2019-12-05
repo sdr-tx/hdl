@@ -5,7 +5,8 @@ set_io pwm_diff_p       T13
 set_io pwm_diff_n       T14
 set_io pwm_pin          T15
 
-
+set_io nsync            B1
+set_io bclk             D1
 set_io pwm              R15
 set_io symb_clk         T16
 set_io fifo_empty       C1

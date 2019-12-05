@@ -15,7 +15,9 @@ module modulator #(
     output reg read,
     /* data flow */
     output reg pwm,
-
+    output nsync,
+    output bclk,
+    
 //    output tc_pwm_step,
 //    output tc_pwm_symb,
 

@@ -5,7 +5,8 @@ set_io pwm_diff_p       82
 set_io pwm_diff_n       83
 set_io pwm_pin          95
 
-
+set_io nsync            10
+set_io bclk             11
 set_io pwm              7
 set_io symb_clk         8
 set_io fifo_empty       9

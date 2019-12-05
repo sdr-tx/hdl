@@ -8,6 +8,8 @@ module top_level (
     output  pwm_diff_p,
     output  pwm_diff_n,
     output  pwm_pin,
+    output  nsync,
+    output  bclk,
 //    output read,
     output fifo_empty,
 //    output fifo_full,
@@ -127,14 +129,8 @@ module top_level (
         // .AM_CLKS_PER_PWM_STEP   ('d1),
         // .AM_PWM_STEP_PER_SAMPLE ('d63),
         // .AM_BITS_PER_SAMPLE     ('d8)
-//<<<<<<< HEAD
         // .PSK_CLKS_PER_BIT       ('d1),
         // .PSK_BITS_PER_SYMBOL    ('d4)
-//=======
-
-//        .PSK_CLKS_PER_BIT       ('d4),
-//        .PSK_BITS_PER_SYMBOL    ('d8)
-//>>>>>>> mercurial-board
     ) top_modulator (
         .clk    (clk),
         .rst    (rst),
@@ -144,15 +140,12 @@ module top_level (
         .empty  (fifo_empty),
         .read   (read_sample),
         /* data flow */
-//<<<<<<< HEAD
-//        .pwm    (pwm)//,
-
         .pwm    (pwm_signal),
+        .nsync  (nsync),
+        .bclk   (bclk),
 
+        /* test */
         .symb_clk(symb_clk)
-//>>>>>>> mercurial-board
-        // .tc_pwm_step(tc_pwm_step),
-        // .tc_pwm_symb(tc_pwm_symb)
     );
 
     /* Led keep alive */
