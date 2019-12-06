@@ -2,7 +2,7 @@
 `timescale 1ns/1ps
 
 module ft245_fifo_interface #(
-    parameter CLOCK_PERIOD_NS = 10
+    parameter CLOCK_PERIOD_NS = 8
 )(
     input clk,
     input rst,
@@ -58,16 +58,18 @@ module ft245_fifo_interface #(
     reg [2:0] state;
     reg [$clog2(MAX_CNT):0] cnt;
     
-    reg rxf_245_i=0, rxf_245_ii=0, txe_245_i=0, txe_245_ii=0;
+    reg rxf_245_i=0, rxf_245_ii=0, txe_245_i=0, txe_245_ii=0, rx_valid_si2;
 
     always @(posedge clk) begin
+        rx_valid_si <= 1'b0;
+
         if (rst == 1'b1) begin
             tx_data_245 <= 0;
             rx_245 <= 1'b1;
             wr_245 <= 1'b1;
             tx_oe_245 <= 1'b0;
             rx_data_si <= 0;
-            rx_valid_si <= 1'b0;
+            rx_valid_si2 <= 1'b0;
             tx_ready_si <= 1'b0;
             state <= ST_IDLE;
             cnt <= 0;
@@ -114,15 +116,16 @@ module ft245_fifo_interface #(
                         state <= ST_INACTIVE_RX;
                         cnt <= 0;
                         rx_data_si <= rx_data_245;
-                        rx_valid_si <= 1'b1;
+                        rx_valid_si2 <= 1'b1;
                     end
                 end
 
                 ST_INACTIVE_RX:
                 begin
                     if (cnt < CNT_INACTIVE_RX) cnt <= cnt + 1;
-                    if ((cnt >= CNT_INACTIVE_RX-1) && (rx_ready_si & rx_valid_si)) begin
-                        rx_valid_si <= 1'b0;
+                    if ((cnt >= CNT_INACTIVE_RX-1) && (rx_ready_si & rx_valid_si2)) begin
+                        rx_valid_si2 <= 1'b0;
+                        rx_valid_si <= 1'b1;
                         state <= ST_IDLE;
                     end
                 end

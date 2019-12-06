@@ -81,7 +81,12 @@ module modulator #(
                             sample_reg [8:0] <= sample;
                             sample_byte <= 0;
                         end
+                        // ugly sanity check
+                        if (sample_reg == 'd0 && sample == 'd0) begin
+                            state <= ST_IDLE;
+                        end
                     end
+
 
                     if (counter_bclk == PAM_CLKS_PER_BCLK/2) begin
                         bclk <= 0;

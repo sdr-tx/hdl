@@ -85,9 +85,9 @@ module top_level (
     assign bclk = bclk_signal;
     assign nsync = nsync_signal;
     // fake testing signals
-    assign fake_pwm = pwm_signal;
-    assign fake_bclk = bclk_signal;
-    assign fake_nsync = nsync_signal;
+    assign fake_pwm = pwm_signal;//read_sample;
+    assign fake_bclk = bclk_signal;//rx_valid_si;
+    assign fake_nsync = nsync_signal;//nsync_signal;
 
     /***************************************************************************
      * module instances
@@ -123,7 +123,7 @@ module top_level (
     );
 
     fifo #(
-        .DEPTH_WIDTH    (10),
+        .DEPTH_WIDTH    (8),
         .DATA_WIDTH     (8)
     ) data_fifo (
         .clk        (clk),

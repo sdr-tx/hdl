@@ -3,13 +3,16 @@ from math import pi, sin
 import numpy as np
 import argparse
 import struct
+import time
 
 max_value = 255
 
 def send_data_forever(tty, data):
     while True:
         for i in range(0, 65535):
-            tty.write(struct.pack("<H", data[i]))
+            tty.write(struct.pack(">H", data[i]))
+            print(data[i])
+            time.sleep(2)
 
 def get_sin_period(fo, fs, max_value):
     N = int(fs / fo)
