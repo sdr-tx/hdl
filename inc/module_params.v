@@ -1,8 +1,8 @@
 `ifndef __PROJECT_CONFIG_V
 `define __PROJECT_CONFIG_V
 
-`define PARAMETER01 6
-`define PARAMETER02 4
-`define PARAMETER03 0
+`define PARAMETER01 1200
+`define PARAMETER02 12
+`define PARAMETER03 24
 
 `endif

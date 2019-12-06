@@ -2,9 +2,9 @@
 //`include "../../inc/project_defines.v"
 
 module modulator #(
-    parameter PARAMETER01 = 4,  // PAM_CLKS_SAMPLING_FREQ
-    parameter PARAMETER02 = 100,// PAM_CLKS_PER_BCLK        - rate 1 : 100 MHz
-    parameter PARAMETER03 = 4   // PAM_DATA_LENGHT
+    parameter PARAMETER01 = 1200,// PAM_CLKS_SAMPLING_FREQ  - 120M -> 100K
+    parameter PARAMETER02 = 12, // PAM_CLKS_PER_BCLK        - 120M -> 10M
+    parameter PARAMETER03 = 24  // PAM_DATA_LENGHT
 )(
     input clk,
     input rst,
@@ -14,8 +14,8 @@ module modulator #(
     input empty,
     output reg read,
     /* data flow */
-    output nsync,
-    output bclk,
+    output reg nsync,
+    output reg bclk,
     output pwm, // sdata
 
     // test
@@ -31,7 +31,7 @@ module modulator #(
     localparam WIDTH_COUNT_BITS = $clog2(PAM_DATA_LENGHT);
 
     localparam ST_IDLE = 0;
-    localparam ST_SENDING = 1;
+    localparam ST_RUNNING = 1;
 
     /* registers */
     reg  state;
@@ -39,7 +39,7 @@ module modulator #(
     reg [WIDTH_COUNT_BCLK-1:0] counter_bclk;
     reg [WIDTH_COUNT_BITS-1:0] counter_bits;
     reg [23:0] sample_reg;
-    reg [1:0] sample_byte;
+    reg sample_byte;
 
     // shift register to serialize each pwm-symbol
     always @ (posedge clk) begin
@@ -64,10 +64,11 @@ module modulator #(
                         if (empty == 1'b0) begin
                             state <= ST_RUNNING;
                             counter_bits <= 0;
-                            counter_clks <= 0;
+                            counter_bclk <= 0;
                             read <= 1'b1;
-                            sample_reg [23:16] <= sample;
-                            sample_byte <= sample_byte + 1;
+                            sample_reg [24:16] <= 8'd0;
+                            sample_reg [15:7] <= sample;
+                            sample_byte <= 1;
                         end
                     end
                 end
@@ -76,20 +77,18 @@ module modulator #(
                 begin
                     nsync <= 0;
                     if (empty == 1'b0) begin
-                        if (sample_byte == 2'd1) begin
-                            sample_reg [15:8] <= sample;
-                            sample_byte <= sample_byte + 1;
-                        end else if (sample_byte == 2'd2) begin
-                            sample_reg [7:0] <= sample;
-                            sample_byte <= sample_byte + 1;
+                        if (sample_byte == 1) begin
+                            sample_reg [8:0] <= sample;
+                            sample_byte <= 0;
                         end
                     end
 
                     if (counter_bclk == PAM_CLKS_PER_BCLK/2) begin
                         bclk <= 0;
+                        counter_bclk <= counter_bclk + 1;
                     end else if (counter_bclk == PAM_CLKS_PER_BCLK-1) begin
                         bclk <= 1;
-                        sample_reg <= sample_reg >> 1;
+                        sample_reg <= sample_reg << 1;
                         counter_bits <= counter_bits + 1;
                         counter_bclk <= 0;
                     end else begin
@@ -97,7 +96,7 @@ module modulator #(
                     end
 
                     if ((counter_bits == PAM_DATA_LENGHT-1) &&
-                        (counter_clks == PAM_CLKS_PER_BCLK-1)) begin
+                        (counter_bclk == PAM_CLKS_PER_BCLK-1)) begin
                         state <= ST_IDLE;
 //                        symb_clk <= ~symb_clk;
                     end
@@ -111,7 +110,7 @@ module modulator #(
         end
     end
 
-    assign sdata = sample_reg[0];
+    assign pwm = sample_reg[23];
 
     initial begin
         $dumpfile ("waveform.vcd");

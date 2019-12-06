@@ -11,7 +11,7 @@
  */
 
 //250 MHZ
-module pll(
+module plla(
 	input  clock_in,
 	output clock_out,
 	output locked

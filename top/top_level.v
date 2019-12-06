@@ -1,18 +1,12 @@
 `include "../inc/module_params.v"
 
 module top_level (
+    // basics
     input   hwclk,
     input   rst,
+
+    // i am alive
     output  [7:0] leds,
-    output  pwm,
-    output  pwm_diff_p,
-    output  pwm_diff_n,
-    output  pwm_pin,
-    output  nsync,
-    output  bclk,
-//    output read,
-    output fifo_empty,
-//    output fifo_full,
 
     // FT245 interface
     inout   [7:0] in_out_245,
@@ -21,8 +15,24 @@ module top_level (
     input   txe_245,
     output  wr_245,
 
+    // output
+    output  pwm_diff_p,
+    output  pwm_diff_n,
+    output  pwm_pin,
+    
+    output  pwm,
+    output  nsync,
+    output  bclk,
+
     // --- test ---
-    output  symb_clk
+    output  symb_clk,
+    output  fake_pwm,
+    output  fake_bclk,
+
+//    output read,
+    output fifo_empty,
+//    output fifo_full,
+    output  fake_nsync    
 //    output  tc_pwm_step,
 //    output  tc_pwm_symb,
 //    output  fake_rst,
@@ -59,7 +69,7 @@ module top_level (
 
     // test
     reg [26:0] count;
-    wire pwm_signal;
+    wire pwm_signal, bclk_signal, nsync_signal;
     assign read = read_sample;
 
     /***************************************************************************
@@ -67,17 +77,24 @@ module top_level (
      ***************************************************************************
      */
     assign leds = led_reg;
-    assign pwm = pwm_signal;
     assign pwm_diff_p = pwm_signal;
     assign pwm_diff_n = ~pwm_signal;
     assign pwm_pin = pwm_signal;
+
+    assign pwm = pwm_signal;
+    assign bclk = bclk_signal;
+    assign nsync = nsync_signal;
+    // fake testing signals
+    assign fake_pwm = pwm_signal;
+    assign fake_bclk = bclk_signal;
+    assign fake_nsync = nsync_signal;
 
     /***************************************************************************
      * module instances
      ***************************************************************************
      */
     /* pll */
-    pll_128MHz system_clk(
+    pll system_clk(
         .clock_in   (hwclk),
         .clock_out  (clk),
         .locked     (aux)
@@ -141,8 +158,8 @@ module top_level (
         .read   (read_sample),
         /* data flow */
         .pwm    (pwm_signal),
-        .nsync  (nsync),
-        .bclk   (bclk),
+        .nsync  (nsync_signal),
+        .bclk   (bclk_signal),
 
         /* test */
         .symb_clk(symb_clk)
