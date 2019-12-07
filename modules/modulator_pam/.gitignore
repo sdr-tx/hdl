@@ -1,6 +1,8 @@
 # Ignore everything these directories
+/__pycache__
+/sim_build
+waveform.vcd
 /build
-/docker/gnuradio-module
 
 
 # But not these files...
@@ -8,9 +10,9 @@
 
 
 # ...even if they are in subdirectories
-#!/src
-#/src/*
-#!/src/*.vhd
+!/tb
+/tb/*
+!/tb/*.vhd
 
 
 

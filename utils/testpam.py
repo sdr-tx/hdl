@@ -9,16 +9,14 @@ max_value = 255
 
 def send_data_forever(tty, data):
     while True:
-        for i in range(0, 65535):
-            tty.write(struct.pack(">H", data[i]))
-            print(data[i])
-            time.sleep(2)
+        for d in data.tobytes():
+            tty.write(d)
+            # tty.write(0struct.pack(">H", data[i]))
+            # print(data.item())
+            # time.sleep(2)
 
 def get_sin_period(fo, fs, max_value):
-    N = int(fs / fo)
-    a = []
-    for i in range(0,65535):
-        a.append(i)
+    a = np.array(range(0, 65536), dtype=np.uint16)
     return a
 
 if __name__ == '__main__':

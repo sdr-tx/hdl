@@ -14,7 +14,7 @@ module test_modulator;
     modulator #(
         .PARAMETER01    (1200),
         .PARAMETER02    (12),
-        .PARAMETER03    (16)
+        .PARAMETER03    (24)
     ) dut (
         .clk      (clk),
         .rst      (rst),
@@ -43,29 +43,15 @@ module test_modulator;
 
         // test sending some data
         sample <= 8'hAA;
-        #1000000
-
-/*        wait (read == 1);
-        wait (read == 0);
+        wait (read == 1);
+        #20
         sample <= 8'h55;
+
+        #2000000
         wait (read == 1);
+        #20
+        sample <= 8'h55;
         
-        // test that the modulator only register the sample
-        // input when the previous sample was transmitted
-        #2000
-        sample <= 8'b00001100;
-
-        wait (read == 1);
-        wait (read == 0);
-
-        wait (read == 1);
-        sample <= 8'b00000110;
-        wait (read == 0);
-
-        wait (read == 1);
-        sample <= 8'b00001001;
-        wait (read == 0);*/
-
         // test that the modulator holds on idle state
         // until the fifo has a new sample
         empty <= 1;

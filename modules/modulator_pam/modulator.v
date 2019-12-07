@@ -32,9 +32,11 @@ module modulator #(
 
     localparam ST_IDLE = 0;
     localparam ST_RUNNING = 1;
+    localparam ST_BYTE0 = 2;
+    localparam ST_BYTE1 = 3;
 
     /* registers */
-    reg  state;
+    reg [1:0] state;
     reg [WIDTH_COUNT_FS-1:0] counter_fs;
     reg [WIDTH_COUNT_BCLK-1:0] counter_bclk;
     reg [WIDTH_COUNT_BITS-1:0] counter_bits;
@@ -62,30 +64,44 @@ module modulator #(
                         counter_fs <= 0;
 
                         if (empty == 1'b0) begin
-                            state <= ST_RUNNING;
+                            state <= ST_BYTE0;
                             counter_bits <= 0;
                             counter_bclk <= 0;
                             read <= 1'b1;
-                            sample_reg [24:16] <= 8'd0;
-                            sample_reg [15:7] <= sample;
                             sample_byte <= 1;
                         end
                     end
                 end
 
+                ST_BYTE0:
+                begin
+                    if (empty == 0) begin
+                        sample_reg [7:0] <= sample;
+                        read <= 1;
+                        state <= ST_BYTE1;
+                    end
+                end
+
+                ST_BYTE1:
+                begin
+                    sample_reg [15:8] <= sample;
+                    state <= ST_RUNNING;
+                end
+
                 ST_RUNNING:
                 begin
                     nsync <= 0;
-                    if (empty == 1'b0) begin
+/*                    if (empty == 1'b0) begin
                         if (sample_byte == 1) begin
-                            sample_reg [8:0] <= sample;
+                            read <= 1'b1;
+                            sample_reg [15:8] <= sample;
                             sample_byte <= 0;
                         end
                         // ugly sanity check
                         if (sample_reg == 'd0 && sample == 'd0) begin
                             state <= ST_IDLE;
                         end
-                    end
+                    end*/
 
 
                     if (counter_bclk == PAM_CLKS_PER_BCLK/2) begin
