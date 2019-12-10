@@ -12,7 +12,7 @@ module test_modulator;
 
 
     modulator #(
-        .PARAMETER01(1000),    // AM_CLKS_PER_PWM_STEP
+        .PARAMETER01(10),    // AM_CLKS_PER_PWM_STEP
         .PARAMETER02(255),  // AM_PWM_STEP_PER_SAMPLE
         .PARAMETER03(8)     // AM_BITS_PER_SAMPLE
     ) dut (
@@ -38,6 +38,7 @@ module test_modulator;
         rst <= 1;
         enable <= 1;
         empty <= 0;
+        sample <= 8'hAA;
         #20
         rst <= 0;
 
@@ -64,7 +65,15 @@ module test_modulator;
 
         sample <= 8'h02;
         wait (read == 1);
-        #2000
+        wait (read == 0);
+        #20
+
+        sample <= 8'h02;
+        wait (read == 1);
+        wait (read == 0);
+
+        wait (read == 1);
+        #80000
         $finish;
     end
 

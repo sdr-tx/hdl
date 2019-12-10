@@ -12,7 +12,7 @@ def send_data_forever(tty, data):
         for d in data.tobytes():
             tty.write(d)
             # tty.write(0struct.pack(">H", data[i]))
-            # print(data.item())
+            # print(d)
             # time.sleepo(2)
 
 def get_sin_period(fo, fs, max_value):

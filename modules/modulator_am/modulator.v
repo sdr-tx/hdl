@@ -40,6 +40,7 @@ module modulator #(
     // counter to generate ticks at pwm-steps frequency
     reg [WIDTH_COUNT_CLKS_PWM_STEP-1:0] counter_clks_per_step;
     reg [7:0] sample_reg;
+    reg [6:0] repeated_sample;
 
     // shift register to serialize each pwm-symbol
     always @ (posedge clk) begin
@@ -50,6 +51,7 @@ module modulator #(
             counter_clks_per_step <= 'd0;
             counter_steps <= 'd0;
             symb_clk <= 0;
+            repeated_sample <= 'd0;
         end else if (enable == 1'b1) begin
             case (state)
                 ST_IDLE:
@@ -59,6 +61,7 @@ module modulator #(
                         counter_steps <= 'd0;
                         counter_clks_per_step <= 'd0;
                         state <= ST_RUNNING;
+                        repeated_sample <= 'd0;
                     end
                 end
 
@@ -76,7 +79,8 @@ module modulator #(
                     if ((counter_steps == AM_PWM_STEP_PER_SAMPLE-2) &&
                         (counter_clks_per_step == AM_CLKS_PER_PWM_STEP-1)) begin
                         // prepare to read a new sample
-                        if (empty == 0) begin
+                        if ((empty == 0) &&
+                            (repeated_sample == 7'd28)) begin
                             read <= 1;
                             fifowasempty <= 0;
                         end else begin
@@ -86,18 +90,22 @@ module modulator #(
 
                     if ((counter_steps == AM_PWM_STEP_PER_SAMPLE-1) &&
                         (counter_clks_per_step == AM_CLKS_PER_PWM_STEP-1)) begin
-                        if (empty == 1) begin
+/*                        if (empty == 1) begin
                             state <= ST_IDLE;
-                        end
+                        end*/
                     end
 
                     if ((counter_steps == AM_PWM_STEP_PER_SAMPLE) &&
                         (counter_clks_per_step == AM_CLKS_PER_PWM_STEP-1)) begin
-                        symb_clk <= ~symb_clk;
-                        if (fifowasempty == 0) begin
-                            sample_reg <= sample;
-                        end
+                        repeated_sample <= repeated_sample + 1;
                         counter_steps <= 'd0;
+                        symb_clk <= ~symb_clk;
+                        if (repeated_sample == 7'd28) begin
+                            repeated_sample <= 'd0;
+                            if (fifowasempty == 0) begin
+                                sample_reg <= sample;
+                            end
+                        end
                     end
                 end
 

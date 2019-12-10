@@ -94,7 +94,7 @@ module top_level (
      ***************************************************************************
      */
     /* pll */
-    pll_256MHz system_clk(
+    pll system_clk(
     // pll system_clk(
         .clock_in   (hwclk),
         .clock_out  (clk),

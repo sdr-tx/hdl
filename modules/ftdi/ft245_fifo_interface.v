@@ -28,7 +28,7 @@ module ft245_fifo_interface #(
 );
 
     localparam WAIT_TIME_RX = 30.0;
-    localparam INACTIVE_TIME_RX = 14.0;
+    localparam INACTIVE_TIME_RX = 14.0; // 14.0;
     localparam SETUP_TIME_TX = 5.0;
     localparam HOLD_TIME_TX = 5.0;
     localparam ACTIVE_TIME_TX = 30.0;
