@@ -48,7 +48,7 @@ set_io pwm              76
 set_io bclk             74
 set_io nsync            79
 
-set_io symb_clk         8
+set_io symb_clk         7
 
 
 

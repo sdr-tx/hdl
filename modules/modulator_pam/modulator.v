@@ -91,18 +91,6 @@ module modulator #(
                 ST_RUNNING:
                 begin
                     nsync <= 0;
-/*                    if (empty == 1'b0) begin
-                        if (sample_byte == 1) begin
-                            read <= 1'b1;
-                            sample_reg [15:8] <= sample;
-                            sample_byte <= 0;
-                        end
-                        // ugly sanity check
-                        if (sample_reg == 'd0 && sample == 'd0) begin
-                            state <= ST_IDLE;
-                        end
-                    end*/
-
 
                     if (counter_bclk == PAM_CLKS_PER_BCLK/2) begin
                         bclk <= 0;
@@ -119,7 +107,6 @@ module modulator #(
                     if ((counter_bits == PAM_DATA_LENGHT-1) &&
                         (counter_bclk == PAM_CLKS_PER_BCLK-1)) begin
                         state <= ST_IDLE;
-//                        symb_clk <= ~symb_clk;
                     end
                 end
 

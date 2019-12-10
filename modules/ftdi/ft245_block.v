@@ -1,3 +1,4 @@
+`include "../../inc/module_params.v"
 
 module ft245_block (
     input clk,
@@ -23,7 +24,7 @@ module ft245_block (
     wire [7:0] in_245, out_245;
 
     ft245_fifo_interface #(
-        .CLOCK_PERIOD_NS (10)
+        .CLOCK_PERIOD_NS (`CLK_PERIOD)
     ) inst_ft245_fifo_interface (
         .clk            (clk),
         .rst            (rst),

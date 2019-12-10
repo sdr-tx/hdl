@@ -13,10 +13,10 @@ def send_data_forever(tty, data):
             tty.write(d)
             # tty.write(0struct.pack(">H", data[i]))
             # print(data.item())
-            # time.sleep(2)
+            # time.sleepo(2)
 
 def get_sin_period(fo, fs, max_value):
-    a = np.array(range(0, 65536), dtype=np.uint16)
+    a = np.array(range(0, 255), dtype=np.uint8)
     return a
 
 if __name__ == '__main__':

@@ -1,57 +1,71 @@
-`include "../../inc/project_defines.v"
 `timescale 1 ns/100 ps  // time-unit = 1 ns, precision = 10 ps
 
 module test_modulator;
 
-  reg rst, enable, new_sample;
-  wire pwm;
-  reg [7:0] sample;
-  
-  /* Make a regular pulsing clock. */
-  reg clk = 0;
-  always #10 clk = !clk;
+    reg rst, enable, empty;
+    wire pwm, read, symb_clk, nsync, bclk;
+    reg [7:0] sample;
+
+    /* Make a regular pulsing clock. */
+    reg clk = 0;
+    always #10 clk = !clk;
 
 
-  modulator #(
-    .FOO(10),
-    .AM_CLKS_IN_PWM_STEPS(10),
-    .AM_PWM_STEPS(10)
-  ) dut (
-    .clk  (clk),
-    .rst  (rst),
-    .enable (enable),
-    /* configuration parameters */
-    .bits_per_sample  (8'd255),
-    .clks_per_pwm_step(8'd2),
-    .new_sample   (new_sample),
-    /* data flow */
-    .sample       (sample),
-    .pwm  (pwm)
-  );
+    modulator #(
+        .PARAMETER01(1000),    // AM_CLKS_PER_PWM_STEP
+        .PARAMETER02(255),  // AM_PWM_STEP_PER_SAMPLE
+        .PARAMETER03(8)     // AM_BITS_PER_SAMPLE
+    ) dut (
+        .clk      (clk),
+        .rst      (rst),
+        .enable   (enable),
+        /* FIFO interface */
+        .sample   (sample),
+        .empty    (empty),
+        .read     (read),
+        /* data flow */
+        .nsync    (nsync),
+        .bclk     (bclk),
+        .pwm      (pwm),
 
-  initial begin
-      $dumpfile ("waveform.vcd");
-      $dumpvars (0,test_modulator);
-      rst <= 1;
-      enable <= 0;
-      new_sample <= 0;
-      #20
-      rst <= 0;
-      #20
-      enable <= 1;
-      #20
-      new_sample <= 1;
-      sample <= 8'd128;
-      #20
-      new_sample <= 0;
-      #50120;
-      new_sample <= 1;
-      sample <= 8'd10;
-      #20
-      new_sample <= 0;
-      #10240;
-      $finish;
+        // test
+        .symb_clk (symb_clk)
+    );
 
-  end
+    initial begin
+        $dumpfile ("waveform.vcd");
+        $dumpvars (0,test_modulator);
+        rst <= 1;
+        enable <= 1;
+        empty <= 0;
+        #20
+        rst <= 0;
+
+        // test sending some data
+        sample <= 8'h03;
+        wait (read == 1);
+        wait (read == 0);
+        #20
+
+        sample <= 8'h05;
+        wait (read == 1);
+        wait (read == 0);
+        #20
+
+        sample <= 8'h00;
+        wait (read == 1);
+        wait (read == 0);
+        #20
+
+        sample <= 8'h0F;
+        wait (read == 1);
+        wait (read == 0);
+        #20
+
+        sample <= 8'h02;
+        wait (read == 1);
+        #2000
+        $finish;
+    end
 
 endmodule 

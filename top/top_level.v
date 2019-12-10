@@ -76,7 +76,7 @@ module top_level (
      * assignments
      ***************************************************************************
      */
-    assign leds = led_reg;
+    assign leds = rx_data_si; // led_reg;
     assign pwm_diff_p = pwm_signal;
     assign pwm_diff_n = ~pwm_signal;
     assign pwm_pin = pwm_signal;
@@ -94,7 +94,8 @@ module top_level (
      ***************************************************************************
      */
     /* pll */
-    pll system_clk(
+    pll_256MHz system_clk(
+    // pll system_clk(
         .clock_in   (hwclk),
         .clock_out  (clk),
         .locked     (aux)
@@ -143,6 +144,10 @@ module top_level (
         .PARAMETER01    (`PARAMETER01),
         .PARAMETER02    (`PARAMETER02),
         .PARAMETER03    (`PARAMETER03),
+        // AM -> 1 255 8
+        // PAM -> 1200 12 24
+        // PSK -> 
+
         // .AM_CLKS_PER_PWM_STEP   ('d1),
         // .AM_PWM_STEP_PER_SAMPLE ('d63),
         // .AM_BITS_PER_SAMPLE     ('d8)

@@ -36,7 +36,7 @@ ARG REBUILD
 #RUN echo ${REBUILD} && git clone https://github.com/sdr-tx/gnuradio-module module && \
 RUN mkdir module
 COPY docker/gnuradio-module module
-RUN cd module && rm -r build &&mkdir build && cd build && cmake .. && make install
+RUN cd module && rm -rf build && mkdir build && cd build && cmake .. && make install
 
 
 

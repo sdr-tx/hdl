@@ -27,9 +27,9 @@ module test_modulator;
         .pwm      (pwm),    // sdata
         .nsync    (nsync),
         .bclk     (bclk),
+        
         // test
         .symb_clk (symb_clk)
-
     );
 
     initial begin
