@@ -145,19 +145,23 @@ module top_level (
         .PARAMETER02    (`PARAMETER02),
         .PARAMETER03    (`PARAMETER03),
         .PARAMETER04    (`PARAMETER04)
-        // AM -> 1 255 8
-        // PAM -> 1200 12 24
+        /*  AM_CLKS_PER_PWM_STEP    1
+         *  AM_PWM_STEP_PER_SAMPLE  255
+         *  AM_BITS_PER_SAMPLE      8
+         *  AM_REPEATED_SAMPLE      30
+         */
 
-        // PSK ->   PSK_CLKS_PER_BIT        4
-        //          PSK_BITS_PER_SYMBOL     4
-        //          
-        //          PSK_REPEATED_SAMPLE     30
+        /*  PSK_CLKS_PER_BIT        4
+         *  PSK_BITS_PER_SYMBOL     4
+         *
+         *  PSK_REPEATED_SAMPLE     30
+         */
 
-        // .AM_CLKS_PER_PWM_STEP   ('d1),
-        // .AM_PWM_STEP_PER_SAMPLE ('d63),
-        // .AM_BITS_PER_SAMPLE     ('d8)
-        // .PSK_CLKS_PER_BIT       ('d1),
-        // .PSK_BITS_PER_SYMBOL    ('d4)
+        /*  PAM_CLKS_SAMPLING_FREQ  1200
+         *  PAM_CLKS_PER_BCLK       12
+         *  PAM_DATA_LENGHT         24
+         *  
+         */
     ) top_modulator (
         .clk    (clk),
         .rst    (rst),

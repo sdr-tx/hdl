@@ -4,7 +4,8 @@
 module modulator #(
     parameter PARAMETER01 = 1200,// PAM_CLKS_SAMPLING_FREQ  - 120M -> 100K
     parameter PARAMETER02 = 12, // PAM_CLKS_PER_BCLK        - 120M -> 10M
-    parameter PARAMETER03 = 24  // PAM_DATA_LENGHT
+    parameter PARAMETER03 = 24, // PAM_DATA_LENGHT
+    parameter PARAMETER04 = 0
 )(
     input clk,
     input rst,
