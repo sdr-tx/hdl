@@ -1,5 +1,4 @@
 `timescale 1ns/1ps
-//`include "../../inc/project_defines.v"
 
 module modulator #(
     parameter PARAMETER01 = 1200,// PAM_CLKS_SAMPLING_FREQ  - 120M -> 100K
@@ -15,9 +14,10 @@ module modulator #(
     input empty,
     output reg read,
     /* data flow */
-    output reg nsync,
-    output reg bclk,
     output pwm, // sdata
+    output sdata,
+    output reg bclk,
+    output reg nsync,
 
     // test
     output reg symb_clk

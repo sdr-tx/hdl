@@ -20,30 +20,19 @@ module top_level (
     output  pwm_diff_n,
     output  pwm_pin,
     
-    output  pwm,
-    output  nsync,
+    output  sdata,
     output  bclk,
+    output  nsync,
 
     // --- test ---
     output  symb_clk,
+    output  fifo_empty,
+
     output  fake_pwm,
+    output  fake_sdata,
     output  fake_bclk,
-
-//    output read,
-    output fifo_empty,
-//    output fifo_full,
-    output  fake_nsync    
-//    output  tc_pwm_step,
-//    output  tc_pwm_symb,
-//    output  fake_rst,
-//    output  test_baudrate
+    output  fake_nsync
 );
-    /***************************************************************************
-     * test
-     ***************************************************************************
-     */
-    assign fake_rst = 1'b1;
-
     /***************************************************************************
      * signals
      ***************************************************************************
@@ -64,26 +53,23 @@ module top_level (
     wire tx, rx;
     wire [7:0] data_tx, data_rx;
 
-    // Inteface between deco_unit and modulator
-    wire new_sample;
-
-    // test
+    // outputs
     reg [26:0] count;
-    wire pwm_signal, bclk_signal, nsync_signal;
-    assign read = read_sample;
+    wire pwm_signal, sdata_signal, bclk_signal, nsync_signal;
 
     /***************************************************************************
      * assignments
      ***************************************************************************
      */
-    assign leds = rx_data_si; // led_reg;
+    assign leds = led_reg;
     assign pwm_diff_p = pwm_signal;
     assign pwm_diff_n = ~pwm_signal;
     assign pwm_pin = pwm_signal;
 
-    assign pwm = pwm_signal;
+    assign sdata = sdata_signal;
     assign bclk = bclk_signal;
     assign nsync = nsync_signal;
+
     // fake testing signals
     assign fake_pwm = pwm_signal;//read_sample;
     assign fake_bclk = bclk_signal;//rx_valid_si;
@@ -172,8 +158,9 @@ module top_level (
         .read   (read_sample),
         /* data flow */
         .pwm    (pwm_signal),
-        .nsync  (nsync_signal),
+        .sdata  (sdata_signal),
         .bclk   (bclk_signal),
+        .nsync  (nsync_signal),
 
         /* test */
         .symb_clk(symb_clk)

@@ -1,5 +1,4 @@
 `timescale 1ns/1ps
-// `include "../../inc/project_defines.v"
 
 module modulator #(
     parameter PARAMETER01 = 1,      // AM_CLKS_PER_PWM_STEP     - 256M
@@ -15,14 +14,15 @@ module modulator #(
     input empty,
     output reg read,
     /* data flow */
-    output reg nsync,
-    output reg bclk,
     output pwm,
+    output sdata,
+    output reg bclk,
+    output reg nsync,
 
     // test
     output reg symb_clk
 );
-    // real AM modulator parameters
+    // real AM modulator parameters                     default
     localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01; // 1000
     localparam AM_PWM_STEP_PER_SAMPLE   = PARAMETER02; // 255
     localparam AM_BITS_PER_SAMPLE       = PARAMETER03; // 8
@@ -91,13 +91,6 @@ module modulator #(
                         end
                     end
 
-                    if ((counter_steps == AM_PWM_STEP_PER_SAMPLE-1) &&
-                        (counter_clks_per_step == AM_CLKS_PER_PWM_STEP-1)) begin
-/*                        if (empty == 1) begin
-                            state <= ST_IDLE;
-                        end*/
-                    end
-
                     if ((counter_steps == AM_PWM_STEP_PER_SAMPLE) &&
                         (counter_clks_per_step == AM_CLKS_PER_PWM_STEP-1)) begin
                         repeated_sample <= repeated_sample + 1;
@@ -108,6 +101,8 @@ module modulator #(
                             repeated_sample <= 'd0;
                             if (fifowasempty == 0) begin
                                 sample_reg <= sample;
+                            end else begin
+                                state <= ST_IDLE;
                             end
                         end
                     end

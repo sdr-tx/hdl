@@ -1,5 +1,4 @@
 `timescale 1ns/1ps
-//`include "../../inc/project_defines.v"
 
 module modulator #(
     parameter PARAMETER01 = 4,  // PSK_CLKS_PER_BIT
@@ -16,8 +15,9 @@ module modulator #(
     output reg read,
     /* data flow */
     output pwm,
-    output nsync,
+    output sdata,
     output bclk,
+    output nsync,
 
     // test
     output reg symb_clk
@@ -94,6 +94,10 @@ module modulator #(
                             read <= 1'b1;
                             sample_reg <= sample;
                             shift_register <= sample;
+
+                            if (empty == 1) begin
+                                state <= ST_IDLE;
+                            end
                         end
                     end
                 end
