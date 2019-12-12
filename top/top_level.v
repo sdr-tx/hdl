@@ -144,6 +144,7 @@ module top_level (
         .PARAMETER01    (`PARAMETER01),
         .PARAMETER02    (`PARAMETER02),
         .PARAMETER03    (`PARAMETER03),
+        .PARAMETER04    (`PARAMETER04),
         // AM -> 1 255 8
         // PAM -> 1200 12 24
         // PSK -> 

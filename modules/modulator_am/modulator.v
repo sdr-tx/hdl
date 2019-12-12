@@ -4,7 +4,8 @@
 module modulator #(
     parameter PARAMETER01 = 1,      // AM_CLKS_PER_PWM_STEP     - 256M
     parameter PARAMETER02 = 255,    // AM_PWM_STEP_PER_SAMPLE   - 256M
-    parameter PARAMETER03 = 8       // AM_BITS_PER_SAMPLE
+    parameter PARAMETER03 = 8,      // AM_BITS_PER_SAMPLE
+    parameter PARAMETER04 = 30      // AM_REPEATED_SAMPLE
 )(
     input clk,
     input rst,
@@ -25,8 +26,10 @@ module modulator #(
     localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01; // 1000
     localparam AM_PWM_STEP_PER_SAMPLE   = PARAMETER02; // 255
     localparam AM_BITS_PER_SAMPLE       = PARAMETER03; // 8
+    localparam AM_REPEATED_SAMPLE       = PARAMETER04; // 20
 
-    localparam WIDTH_COUNT_CLKS_PWM_STEP= $clog2(AM_CLKS_PER_PWM_STEP);
+    localparam WIDTH_CLKS_PWM_STEP      = $clog2(AM_CLKS_PER_PWM_STEP);
+    localparam WIDTH_REPEATED_SAMPLE    = $clog2(AM_REPEATED_SAMPLE);
 
     localparam ST_IDLE=0;
     localparam ST_RUNNING=1;
@@ -38,20 +41,20 @@ module modulator #(
     // counter to generate ticks at pwm-symbols frequency
     reg [AM_BITS_PER_SAMPLE:0] counter_steps;
     // counter to generate ticks at pwm-steps frequency
-    reg [WIDTH_COUNT_CLKS_PWM_STEP-1:0] counter_clks_per_step;
+    reg [WIDTH_CLKS_PWM_STEP-1:0] counter_clks_per_step;
     reg [7:0] sample_reg;
-    reg [6:0] repeated_sample;
+    reg [WIDTH_REPEATED_SAMPLE-1:0] repeated_sample;
 
     // shift register to serialize each pwm-symbol
     always @ (posedge clk) begin
         read <= 1'b0;
         if (rst == 1'b1) begin
-            state <= ST_IDLE;
+            symb_clk <= 0;
             sample_reg <= 'd0;
             counter_clks_per_step <= 'd0;
             counter_steps <= 'd0;
-            symb_clk <= 0;
             repeated_sample <= 'd0;
+            state <= ST_IDLE;
         end else if (enable == 1'b1) begin
             case (state)
                 ST_IDLE:
@@ -80,7 +83,7 @@ module modulator #(
                         (counter_clks_per_step == AM_CLKS_PER_PWM_STEP-1)) begin
                         // prepare to read a new sample
                         if ((empty == 0) &&
-                            (repeated_sample == 7'd28)) begin
+                            (repeated_sample == AM_REPEATED_SAMPLE)) begin
                             read <= 1;
                             fifowasempty <= 0;
                         end else begin
@@ -100,7 +103,8 @@ module modulator #(
                         repeated_sample <= repeated_sample + 1;
                         counter_steps <= 'd0;
                         symb_clk <= ~symb_clk;
-                        if (repeated_sample == 7'd28) begin
+                        
+                        if (repeated_sample == AM_REPEATED_SAMPLE) begin
                             repeated_sample <= 'd0;
                             if (fifowasempty == 0) begin
                                 sample_reg <= sample;

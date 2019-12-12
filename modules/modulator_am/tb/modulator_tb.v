@@ -12,9 +12,10 @@ module test_modulator;
 
 
     modulator #(
-        .PARAMETER01(10),    // AM_CLKS_PER_PWM_STEP
+        .PARAMETER01(10),   // AM_CLKS_PER_PWM_STEP
         .PARAMETER02(255),  // AM_PWM_STEP_PER_SAMPLE
-        .PARAMETER03(8)     // AM_BITS_PER_SAMPLE
+        .PARAMETER03(8),    // AM_BITS_PER_SAMPLE
+        .PARAMETER04(5)     // AM_
     ) dut (
         .clk      (clk),
         .rst      (rst),
@@ -43,32 +44,37 @@ module test_modulator;
         rst <= 0;
 
         // test sending some data
-        sample <= 8'h03;
+        sample <= 8'h90;
         wait (read == 1);
         wait (read == 0);
         #20
 
-        sample <= 8'h05;
+        sample <= 8'h90;
         wait (read == 1);
         wait (read == 0);
         #20
 
-        sample <= 8'h00;
+        sample <= 8'h70;
         wait (read == 1);
         wait (read == 0);
         #20
 
-        sample <= 8'h0F;
+        sample <= 8'h50;
         wait (read == 1);
         wait (read == 0);
         #20
 
-        sample <= 8'h02;
+        sample <= 8'h30;
         wait (read == 1);
         wait (read == 0);
         #20
 
-        sample <= 8'h02;
+        sample <= 8'h10;
+        wait (read == 1);
+        wait (read == 0);
+        #20
+
+        sample <= 8'h40;
         wait (read == 1);
         wait (read == 0);
 
