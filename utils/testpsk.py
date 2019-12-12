@@ -3,14 +3,11 @@ from math import pi, sin
 import numpy as np
 import argparse
 
-max_value = 255
-
 def send_data_forever(tty, data):
     while True:
         tty.write(data)
 
-def get_sin_period():#fo, fs, max_value):
-    N = 2
+def get_sin_period():
     packet = bytearray()
     symbol_repeat = 10
 
@@ -38,6 +35,6 @@ if __name__ == '__main__':
     parser.add_argument('tty', type=str, help='tty')
     args = parser.parse_args()
 
-    data = get_sin_period()#args.fo, args.fs, args.max)
+    data = get_sin_period()
     with serial.Serial(args.tty) as tty:
         send_data_forever(tty, data)

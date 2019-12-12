@@ -86,10 +86,10 @@ module modulator #(
                         repeated_sample <= repeated_sample + 1;
                         counter_bits <= 0;
                         counter_clks <= 0;
-                        symb_clk <= ~symb_clk;
-                        shift_register <= sample;
+                        shift_register <= sample_reg;
 
-                        if (repeated_sample == PSK_REPEATED_SAMPLE) begin
+                        if (repeated_sample == PSK_REPEATED_SAMPLE-1) begin
+                            symb_clk <= ~symb_clk;
                             repeated_sample <= 0;
                             read <= 1'b1;
                             sample_reg <= sample;
@@ -106,7 +106,7 @@ module modulator #(
         end
     end
 
-    assign pwm = sample_reg[0];
+    assign pwm = shift_register[0];
 
     initial begin
         $dumpfile ("waveform.vcd");
