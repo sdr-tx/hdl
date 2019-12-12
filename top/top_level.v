@@ -72,6 +72,7 @@ module top_level (
 
     // fake testing signals
     assign fake_pwm = pwm_signal;//read_sample;
+    assign fake_sdata = sdata_signal;//read_sample;
     assign fake_bclk = bclk_signal;//rx_valid_si;
     assign fake_nsync = nsync_signal;//nsync_signal;
 

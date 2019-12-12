@@ -119,7 +119,7 @@ module modulator #(
         end
     end
 
-    assign pwm = sample_reg[23];
+    assign sdata = sample_reg[23];
 
     initial begin
         $dumpfile ("waveform.vcd");
