@@ -23,7 +23,7 @@ module modulator #(
     output reg symb_clk
 );
     // real AM modulator parameters                     default
-    localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01; // 1000
+    localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01; // 1
     localparam AM_PWM_STEP_PER_SAMPLE   = PARAMETER02; // 255
     localparam AM_BITS_PER_SAMPLE       = PARAMETER03; // 8
     localparam AM_REPEATED_SAMPLE       = PARAMETER04; // 20

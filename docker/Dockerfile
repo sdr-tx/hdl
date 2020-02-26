@@ -25,6 +25,7 @@ RUN rm -rf /build/
 
 # gnuradio installation
 RUN apt install -y gnuradio
+RUN apt install -y gr-osmosdr
 
 # mercurial grc module dependencies
 RUN apt update && apt-get install -y --no-install-recommends \

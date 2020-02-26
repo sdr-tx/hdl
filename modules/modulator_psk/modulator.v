@@ -95,9 +95,9 @@ module modulator #(
                             sample_reg <= sample;
                             shift_register <= sample;
 
-                            if (empty == 1) begin
-                                state <= ST_IDLE;
-                            end
+                            // if (empty == 1) begin
+                            //     state <= ST_IDLE;
+                            // end
                         end
                     end
                 end

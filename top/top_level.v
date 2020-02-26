@@ -81,8 +81,8 @@ module top_level (
      ***************************************************************************
      */
     /* pll */
-    pll system_clk(
     // pll system_clk(
+    pll system_clk(
         .clock_in   (hwclk),
         .clock_out  (clk),
         .locked     (aux)
@@ -167,13 +167,32 @@ module top_level (
         .symb_clk(symb_clk)
     );
 
+    /**
+     * We are using the leds to let the user know the current
+     * transmitter status
+     *
+     * led_reg[0]   fifo_empty status
+     * led_reg[7:5] MODULATION
+     * where MODULATION is
+     *  001 1 AM
+     *  010 2 PAM
+     *  011 3 BPSK
+     *  100 4 QPSK
+     *  101 5 8PSK
+     */
+    assign led_reg[6] = fifo_empty;
+    assign led_reg[2:0] = `MODULATION;
     /* Led keep alive */
     always @(posedge clk) begin
         if (rst == 1'b1) begin
-            led_reg = 8'hFF;
+            led_reg[7] = 0;
             count = 27'd0;
-        end else if (count == 27'd126000000) begin
-            led_reg = led_reg + 1;
+        end else if (count == 27'd10000) begin
+            if (led_reg[7] == 1'b1) begin
+                led_reg[7] = 0;
+            end else begin
+                led_reg[7] = 1;
+            end
             count = 27'd0;
         end else begin
             count = count + 1;

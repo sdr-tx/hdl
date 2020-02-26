@@ -6,6 +6,8 @@
 `define PARAMETER03 24
 `define PARAMETER04 0
 
+`define MODULATION  5
+
 `define CLK_PERIOD  4
 
 `endif
