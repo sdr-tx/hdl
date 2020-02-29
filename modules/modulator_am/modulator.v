@@ -23,7 +23,7 @@ module modulator #(
     output reg symb_clk
 );
     // real AM modulator parameters                     default
-    localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01; // 1
+    localparam AM_CLKS_PER_PWM_STEP     = PARAMETER01; // 1000
     localparam AM_PWM_STEP_PER_SAMPLE   = PARAMETER02; // 255
     localparam AM_BITS_PER_SAMPLE       = PARAMETER03; // 8
     localparam AM_REPEATED_SAMPLE       = PARAMETER04; // 20
@@ -43,6 +43,7 @@ module modulator #(
     // counter to generate ticks at pwm-steps frequency
     reg [WIDTH_CLKS_PWM_STEP-1:0] counter_clks_per_step;
     reg [7:0] sample_reg;
+
     reg [WIDTH_REPEATED_SAMPLE-1:0] repeated_sample;
 
     // shift register to serialize each pwm-symbol
@@ -116,11 +117,10 @@ module modulator #(
         end
     end
 
-    assign pwm = (counter_steps[7:0] < sample_reg) ? 1 : 0;
+    assign pwm = (counter_steps[AM_BITS_PER_SAMPLE:0] < (sample_reg >> (8- AM_BITS_PER_SAMPLE))) ? 1 : 0;
 
     initial begin
         $dumpfile ("waveform.vcd");
         $dumpvars (0, modulator);
     end
 endmodule
-

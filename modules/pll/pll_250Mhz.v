@@ -6,11 +6,11 @@
  * Use at your own risk.
  *
  * Given input frequency:        12.000 MHz
- * Requested output frequency:  240.000 MHz
- * Achieved output frequency:   240.000 MHz
+ * Requested output frequency:  250.000 MHz
+ * Achieved output frequency:   249.000 MHz
  */
 
-module pll_240_MHZ(
+module pll_250(
 	input  clock_in,
 	output clock_out,
 	output locked
@@ -19,7 +19,7 @@ module pll_240_MHZ(
 SB_PLL40_CORE #(
 		.FEEDBACK_PATH("SIMPLE"),
 		.DIVR(4'b0000),		// DIVR =  0
-		.DIVF(7'b1001111),	// DIVF = 79
+		.DIVF(7'b1010010),	// DIVF = 82
 		.DIVQ(3'b010),		// DIVQ =  2
 		.FILTER_RANGE(3'b001)	// FILTER_RANGE = 1
 	) uut (
