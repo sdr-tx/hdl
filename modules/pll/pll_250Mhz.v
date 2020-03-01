@@ -10,7 +10,7 @@
  * Achieved output frequency:   249.000 MHz
  */
 
-module pll_250(
+module pll(
 	input  clock_in,
 	output clock_out,
 	output locked

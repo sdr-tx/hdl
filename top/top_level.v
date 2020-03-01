@@ -182,18 +182,19 @@ module top_level (
      */
     assign led_reg[6] = fifo_empty;
     assign led_reg[2:0] = `MODULATION;
+
     /* Led keep alive */
     always @(posedge clk) begin
         if (rst == 1'b1) begin
             led_reg[7] = 0;
-            count = 27'd0;
-        end else if (count == 27'd10000) begin
+            count = 28'd0;
+        end else if (count == 28'd120000000) begin
             if (led_reg[7] == 1'b1) begin
                 led_reg[7] = 0;
             end else begin
                 led_reg[7] = 1;
             end
-            count = 27'd0;
+            count = 28'd0;
         end else begin
             count = count + 1;
         end

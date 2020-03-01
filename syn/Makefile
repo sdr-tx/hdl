@@ -1,11 +1,14 @@
 TOP := top_level
 # default modulator
 MOD := am
+PLL := 120
 #deault board
 HW:= mercurial
 
 SRC := $(wildcard ../modules/modulator_$(MOD)/*.v)
-SRC += $(filter-out $(wildcard ../modules/modulator_*/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
+SRC += $(wildcard ../modules/pll/pll_$(PLL)MHz.v)
+
+SRC += $(filter-out $(wildcard ../modules/modulator_*/*.v) $(wildcard ../modules/pll/*.v), $(wildcard ../modules/**/*.v ../top/$(TOP).v) )
 INC := ../inc/
 BUILD = ../build
 
